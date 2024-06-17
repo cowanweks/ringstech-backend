@@ -25,6 +25,7 @@ class DevelopmentConfig(Config):
 
 
 class TestingConfig(Config):
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     ENV = "testing"
     TESTING = True
 
@@ -35,3 +36,4 @@ class ProductionConfig(Config):
     DEBUG = False
     HOST = "0.0.0.0"
     TESTING = True
+    SQLALCHEMY_DATABASE_URI = "postgresql://u5dvnv50squoju:p2e7f670526dca923dfccd2b19fe826939ae94a5d6ddbd0bc22495f3adb5006b3@c5hilnj7pn10vb.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d6h6o8s21fhl84"

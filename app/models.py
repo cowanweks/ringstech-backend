@@ -11,11 +11,11 @@ class Users(db.Model):
     """Model Representing Users"""
 
     user_id: Mapped[str] = mapped_column(db.String, primary_key=True)
-    customer_id: Mapped[str] = mapped_column(db.String(25), unique=True)
-    email: Mapped[str] = mapped_column(db.String(25), unique=True, nullable=False)
-    username: Mapped[str] = mapped_column(db.String(25), unique=True, nullable=True)
-    password: Mapped[str] = mapped_column(db.String(255))
-    roles: Mapped[str] = mapped_column(db.String(25))
+    customer_id: Mapped[str] = mapped_column(db.String(), unique=True)
+    email: Mapped[str] = mapped_column(db.String(), unique=True, nullable=False)
+    username: Mapped[str] = mapped_column(db.String(), unique=True, nullable=True)
+    password: Mapped[str] = mapped_column(db.String())
+    roles: Mapped[str] = mapped_column(db.String())
 
     def serialize(self):
         return {
@@ -24,7 +24,7 @@ class Users(db.Model):
             "password": self.password,
             "username": self.username,
             "email": self.email,
-            "role": self.roles
+            "role": self.roles,
         }
 
 
@@ -33,15 +33,15 @@ class Address(db.Model):
     """Model Representing Users"""
 
     address_id: Mapped[str] = mapped_column(db.String, primary_key=True)
-    customer_id: Mapped[str] = mapped_column(db.String(25), unique=True)
-    street_address: Mapped[str] = mapped_column(db.String(255))
-    address_line_2: Mapped[str] = mapped_column(db.String(255))
-    city: Mapped[str] = mapped_column(db.String(255))
-    state: Mapped[str] = mapped_column(db.String(255))
-    postal_code: Mapped[str] = mapped_column(db.String(255))
-    country: Mapped[str] = mapped_column(db.String(255))
-    phone_number: Mapped[str] = mapped_column(db.String(255))
-    email_address: Mapped[str] = mapped_column(db.String(255))
+    customer_id: Mapped[str] = mapped_column(db.String(), unique=True)
+    street_address: Mapped[str] = mapped_column(db.String())
+    address_line_2: Mapped[str] = mapped_column(db.String())
+    city: Mapped[str] = mapped_column(db.String())
+    state: Mapped[str] = mapped_column(db.String())
+    postal_code: Mapped[str] = mapped_column(db.String())
+    country: Mapped[str] = mapped_column(db.String())
+    phone_number: Mapped[str] = mapped_column(db.String())
+    email_address: Mapped[str] = mapped_column(db.String())
 
     def serialize(self):
         return {
@@ -54,7 +54,7 @@ class Address(db.Model):
             "country": self.country,
             "phone_number": self.phone_number,
             "postal_code": self.postal_code,
-            "state": self.state
+            "state": self.state,
         }
 
 
@@ -62,7 +62,9 @@ class Address(db.Model):
 class ShippingAddress(Address):
     """Model Representing Shipping Address"""
 
-    full_name: Mapped[str] = mapped_column(db.String(255))
+    __tablename__ = "shipping_addresses"
+
+    full_name: Mapped[str] = mapped_column(db.String())
 
     def serialize(self):
         return {
@@ -76,7 +78,7 @@ class ShippingAddress(Address):
             "country": self.country,
             "phone_number": self.phone_number,
             "postal_code": self.postal_code,
-            "state": self.state
+            "state": self.state,
         }
 
 
@@ -84,12 +86,14 @@ class ShippingAddress(Address):
 class Customer(db.Model):
     """Model Representing Users"""
 
+    __tablename__ = "customers"
+
     customer_id: Mapped[str] = mapped_column(db.String, primary_key=True)
-    first_name: Mapped[str] = mapped_column(db.String(255))
-    middle_name: Mapped[str] = mapped_column(db.String(255))
-    last_name: Mapped[str] = mapped_column(db.String(255))
-    phone: Mapped[str] = mapped_column(db.String(255))
-    email: Mapped[str] = mapped_column(db.String(255))
+    first_name: Mapped[str] = mapped_column(db.String())
+    middle_name: Mapped[str] = mapped_column(db.String())
+    last_name: Mapped[str] = mapped_column(db.String())
+    phone: Mapped[str] = mapped_column(db.String())
+    email: Mapped[str] = mapped_column(db.String())
     address: Mapped[str] = mapped_column(db.String)
     shipping_address: Mapped[str] = mapped_column(db.String)
     reg_date: Mapped[datetime.datetime] = mapped_column(
@@ -98,12 +102,15 @@ class Customer(db.Model):
 
     def serialize(self):
         return {
-            "user_id": self.user_id,
-            "staff_no": self.staff_no,
-            "password": self.password,
-            "username": self.username,
-            "role": self.roles,
-            "registration_date": self.reg_date,
+            "customer_id": self.customer_id,
+            "first_name": self.first_name,
+            "middle_name": self.middle_name,
+            "last_name": self.last_name,
+            "phone": self.phone,
+            "email": self.email,
+            "address": self.address,
+            "shipping_address": self.shipping_address,
+            "reg_date": self.reg_date,
         }
 
 
@@ -111,13 +118,15 @@ class Customer(db.Model):
 class Product(db.Model):
     """Model Representing Staffs"""
 
-    product_id: Mapped[str] = mapped_column(db.String(25), primary_key=True)
-    product_name: Mapped[str] = mapped_column(db.String(25), nullable=False)
-    product_unit_price: Mapped[str] = mapped_column(db.String(25), nullable=False)
-    description: Mapped[str] = mapped_column(db.String(25), nullable=False)
-    product_category: Mapped[str] = mapped_column(db.String(25))
-    available_colors: Mapped[str] = mapped_column(db.String(25))
-    is_available: Mapped[bool] = mapped_column(db.Boolean(25))
+    __tablename__ = "products"
+
+    product_id: Mapped[str] = mapped_column(db.String(), primary_key=True)
+    product_name: Mapped[str] = mapped_column(db.String(), nullable=False)
+    product_unit_price: Mapped[str] = mapped_column(db.String(), nullable=False)
+    description: Mapped[str] = mapped_column(db.String(), nullable=False)
+    product_category: Mapped[str] = mapped_column(db.String())
+    available_colors: Mapped[str] = mapped_column(db.String())
+    is_available: Mapped[bool] = mapped_column(db.Boolean())
     in_stock: Mapped[int] = mapped_column(db.Integer)
     product_image: Mapped[str] = mapped_column(db.String, nullable=True)
     model: Mapped[str] = mapped_column(db.String, nullable=True)
@@ -157,23 +166,24 @@ class Product(db.Model):
             "processor": self.processor,
             "display": self.display,
             "ram": self.ram,
-            "gamesIncluded": self.gamesIncluded
+            "gamesIncluded": self.gamesIncluded,
         }
 
 
 @dataclass
 class Order(db.Model):
     """Model representing an order"""
-    order_id: Mapped[str] = mapped_column(
-        db.String,
-        primary_key=True,
-        nullable=False
-    )
+
+    __tablename__ = "orders"
+
+    order_id: Mapped[str] = mapped_column(db.String, primary_key=True, nullable=False)
     color: Mapped[str] = mapped_column(db.String)
     product_id: Mapped[str] = mapped_column(db.String)
     quantity: Mapped[int] = mapped_column(db.Integer)
     shipping_address: Mapped[str] = mapped_column(db.String)
-    created_at: Mapped[str] = mapped_column(DateTime(timezone=True), default=datetime.datetime.now())
+    created_at: Mapped[str] = mapped_column(
+        DateTime(timezone=True), default=datetime.datetime.now()
+    )
 
     def serialize(self):
         return {
@@ -182,7 +192,7 @@ class Order(db.Model):
             "quantity": self.quantity,
             "color": self.color,
             "created_at": self.created_at,
-            "shipping_address": self.shipping_address
+            "shipping_address": self.shipping_address,
         }
 
 
@@ -190,11 +200,11 @@ class Order(db.Model):
 class Roles(db.Model):
     """Model Representing Roles available to registered users"""
 
-    role_id: Mapped[str] = mapped_column(
-        db.String, primary_key=True, nullable=False
-    )
-    role_name: Mapped[str] = mapped_column(db.String(25), unique=True, nullable=False)
-    role_description: Mapped[str] = mapped_column(db.String(255))
+    __tablename__ = "roles"
+
+    role_id: Mapped[str] = mapped_column(db.String, primary_key=True, nullable=False)
+    role_name: Mapped[str] = mapped_column(db.String(), unique=True, nullable=False)
+    role_description: Mapped[str] = mapped_column(db.String())
 
     def serialize(self):
         return {
