@@ -1,23 +1,22 @@
 from flask import Blueprint, request, jsonify
-from app.controllers.product import new_product, get_products, delete_product, update_product
+from app.controllers.product import (
+    new_product,
+    get_products,
+    delete_product,
+    update_product,
+)
 
 # Units blueprint
-product_route = Blueprint("product_route", __name__, url_prefix="/ringstech/api/v1/products")
+product_route = Blueprint(
+    "product_route", __name__, url_prefix="/ringstech/api/v1/products"
+)
 
 
 @product_route.route("/", methods=["POST"])
 def new_product_route():
     """New Unit"""
 
-    """
-    ImmutableMultiDict([('available_colors',
-    '["red", "Green", "Yellow"]'), ('product_category',
-    'accessory'), ('description', 'This is Arek'), ('is_available', 'False'),
-     ('product_name', 'samsung'), ('product_unit_price', '5000'), ('in_stock', '4'),
-      ('brand', 'Samsung'), ('display', 'Guerrilla Screen')])
-    """
-
-    valid, msg = new_product(request.form, request.files)
+    valid, msg = new_product(form=request.form, files=request.files)
 
     if valid:
         return jsonify(msg=msg), 201
@@ -61,4 +60,3 @@ def delete_product_route():
 
     else:
         return jsonify(msg=response), 500
-

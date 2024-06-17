@@ -7,7 +7,6 @@ class ProductForm(Form):
     in_stock = IntegerField(
         "Product in Stock", [validators.DataRequired("Product in Stock required!")]
     )
-    image = FileField("Product Image", [])
     brand = StringField(
         "Product Brand", [validators.DataRequired("Product Brand is required!")]
     )

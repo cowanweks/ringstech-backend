@@ -23,8 +23,10 @@ def index():
 
 @index_route.route("/uploads", methods=["GET", "POST"])
 def upload_image():
+
     if request.method == "POST":
         if "image" in request.files:
+
             image = request.files["image"]
 
             if image.filename != "":
@@ -38,11 +40,11 @@ def upload_image():
                         image.save(
                             os.path.join(current_app.config["UPLOADS_DIR"], file_name)
                         )
-                        return file_name, 200
+                        return jsonify(file_name=file_name), 201
 
                     except Exception as ex:
                         print(ex)
-                        return f"{str(ex)}", 500
+                        return jsonify(f"{str(ex)}"), 500
 
                 return "File type not supported!", 500
 
