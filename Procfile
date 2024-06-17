@@ -1,1 +1,1 @@
-web: gunicorn --workers=2 python3 run.py
+web: python3 run.py
