@@ -7,33 +7,17 @@ class ProductForm(Form):
     in_stock = IntegerField(
         "Product in Stock", [validators.DataRequired("Product in Stock required!")]
     )
-    product_image = FileField(
-        "Product Image", []
-    )
+    image = FileField("Product Image", [])
     brand = StringField(
         "Product Brand", [validators.DataRequired("Product Brand is required!")]
     )
-    model = StringField(
-        "Product Model", []
-    )
-    battery = StringField(
-        "Product Battery", []
-    )
-    cameras = StringField(
-        "Product Cameras", []
-    )
-    processor = StringField(
-        "Product Processor", []
-    )
-    display = StringField(
-        "Product Display", []
-    )
-    ram = StringField(
-        "Product RAM", []
-    )
-    gamesIncluded = StringField(
-        "Product Games Included", []
-    )
+    model = StringField("Product Model", [])
+    battery = StringField("Product Battery", [])
+    cameras = StringField("Product Cameras", [])
+    processor = StringField("Product Processor", [])
+    display = StringField("Product Display", [])
+    ram = StringField("Product RAM", [])
+    gamesIncluded = StringField("Product Games Included", [])
 
     product_name = StringField(
         "Product Name", [validators.DataRequired("Product Name is required!")]

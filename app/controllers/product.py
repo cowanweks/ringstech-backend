@@ -1,38 +1,19 @@
-import os
-import json
-from typing import NewType
 from uuid import uuid4
-from flask import current_app
-from werkzeug.datastructures import ImmutableMultiDict, FileStorage, MultiDict
+from werkzeug.datastructures import  MultiDict
 from app.models import db, Product
-from werkzeug.utils import secure_filename
 from app.forms.product import ProductForm, ProductUpdateForm
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
-# Set allowed file extensions
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
-
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 def new_product(data: dict, files):
     """A controller that handles new user registrations"""
 
-    print(files)
 
     try:
         new_product_form = ProductForm(data)
 
         if new_product_form.validate():
-            file_name = None
-            # product_image = files['product_image']
-            #
-            # if product_image and allowed_file(product_image.filename):
-            #     file_name = secure_filename(product_image.filename)
-            #     file_path = os.path.join(current_app.config['UPLOADS_DIR'], file_name)
-            #     product_image.save(file_path)
 
             product = Product(
                 product_id=str(uuid4()),
@@ -42,7 +23,7 @@ def new_product(data: dict, files):
                 description=new_product_form.description.data,
                 is_available=new_product_form.is_available.data,
                 product_unit_price=new_product_form.product_unit_price.data,
-                product_image=file_name,
+                product_image=new_product_form.image.data,
                 in_stock=new_product_form.in_stock.data,
                 battery=new_product_form.battery.data,
                 cameras=new_product_form.cameras.data,

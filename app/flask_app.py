@@ -55,7 +55,7 @@ def create_app() -> Flask:
 
     print(
         bcolors.WARNING
-        + f"[*] - You are running {app.config.get('APP_NAME')} in {app.config.get('ENV')} on PORT {app.config.get("PORT")} !"
+        + f"""[*] - You are running {app.config.get('APP_NAME')} in {app.config.get('ENV')} on HOST {app.config.get("HOST")} on PORT {app.config.get("PORT")} !"""
     )
 
     return app

@@ -9,7 +9,13 @@ product_route = Blueprint("product_route", __name__, url_prefix="/ringstech/api/
 def new_product_route():
     """New Unit"""
 
-    print(request.form)
+    """
+    ImmutableMultiDict([('available_colors',
+    '["red", "Green", "Yellow"]'), ('product_category',
+    'accessory'), ('description', 'This is Arek'), ('is_available', 'False'),
+     ('product_name', 'samsung'), ('product_unit_price', '5000'), ('in_stock', '4'),
+      ('brand', 'Samsung'), ('display', 'Guerrilla Screen')])
+    """
 
     valid, msg = new_product(request.form, request.files)
 
