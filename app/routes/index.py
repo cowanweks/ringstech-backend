@@ -34,7 +34,10 @@ def upload_image():
 
                 if allowed_file(
                     filename=file_name,
-                    ALLOWED_EXTENSIONS={"txt", "pdf", "png", "jpg", "jpeg", "gif"},
+                    ALLOWED_EXTENSIONS={
+                            "jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp",
+                            "ico", "svg", "psd", "eps", "ai", "raw"
+                        },
                 ):
                     try:
                         image.save(
