@@ -8,7 +8,12 @@ def main():
 
     if flask_app.config.get("ENV") == "production":
         try:
-            serve(app=flask_app, host="0.0.0.0", port=5000, url_prefix="/bytabler")
+            serve(
+                app=flask_app,
+                host="0.0.0.0",
+                port=flask_app.config.get("PORT"),
+                url_prefix="/bytabler",
+            )
         except Exception as ex:
             print(str(ex))
 
