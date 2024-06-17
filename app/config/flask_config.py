@@ -4,7 +4,7 @@ from app.config import DBConfig
 
 
 class Config(DBConfig):
-    PORT = 3000
+    PORT = 5000
     DEBUG = True
     TESTING = False
     HOST = "127.0.0.1" or "localhost"
