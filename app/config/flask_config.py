@@ -1,3 +1,4 @@
+import os
 import secrets
 from cachelib.file import FileSystemCache
 from app.config import DBConfig
@@ -30,6 +31,7 @@ class TestingConfig(Config):
 
 
 class ProductionConfig(Config):
+    PORT = os.getenv("PORT") or 80
     ENV = "production"
     DEBUG = False
     HOST = "0.0.0.0"
