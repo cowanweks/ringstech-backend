@@ -21,7 +21,6 @@ def create_app() -> Flask:
 
     # Prevent redirects in blueprints
     app.url_map.strict_slashes = False
-    app.static_url_path = ''
     app.add_url_rule(
         "/ringstech/api/v1", endpoint="api_index", view_func=lambda: "API Home Page"
     )

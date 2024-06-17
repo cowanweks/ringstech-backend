@@ -6,7 +6,7 @@ from flask import (
 )
 from app.controllers.login import login, logout
 
-index_route = Blueprint("index_route", __name__, url_prefix="/bytabler/api/v1")
+index_route = Blueprint("index_route", __name__, url_prefix="/ringstech/api/v1")
 
 
 @index_route.route("/", methods=["GET"])
