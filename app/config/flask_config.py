@@ -30,6 +30,7 @@ class TestingConfig(Config):
 
 
 class ProductionConfig(Config):
+    PORT = 80
     ENV = "production"
     DEBUG = False
     HOST = "0.0.0.0"
