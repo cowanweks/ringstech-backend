@@ -3,17 +3,19 @@ from werkzeug.datastructures import MultiDict
 from app.models import db, Product
 from app.forms.product import ProductForm, ProductUpdateForm
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-import requests
+from app.utils import save_image
 
 
-def new_product(form: dict, file_name: str):
+def new_product(data: dict, files: dict):
     """A controller that handles new user registrations"""
 
-    try:
-        new_product_form = ProductForm(form)
+    new_product_form = ProductForm(data)
 
-        if new_product_form.validate():
+    if new_product_form.validate():
 
+        file_name = save_image(files=files, file="product_image")
+
+        try:
             product = Product(
                 product_id=str(uuid4()),
                 product_name=new_product_form.product_name.data,
@@ -38,13 +40,13 @@ def new_product(form: dict, file_name: str):
             db.session.commit()
             return True, "Successfully Created new Product!"
 
-        else:
-            print(new_product_form.errors)
-            return False, new_product_form.errors
+        except IntegrityError as ex:
+            print(ex)
+            return False, "Product already exists!"
 
-    except IntegrityError as ex:
-        print(ex)
-        return False, "Product already exists!"
+    else:
+        print(new_product_form.errors)
+        return False, new_product_form.errors
 
 
 def get_products(args: MultiDict[str, str]):

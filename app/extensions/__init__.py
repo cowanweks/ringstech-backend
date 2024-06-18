@@ -8,4 +8,4 @@ from flask_cors import CORS
 sess = Session()
 db = SQLAlchemy(model_class=Base)
 folder_setup = FolderSetup()
-cors = CORS()
+cors = CORS(origins=['*'], methods=['GET', 'POST', 'PUT', 'DELETE'])

@@ -17,28 +17,13 @@ product_route = Blueprint(
 @product_route.route("/", methods=["POST"])
 def new_product_route():
     """New Unit"""
-    image_file = request.files.get("product_image")
+    print(request)
+    valid, msg = new_product(data=request.form, files=request.files)
 
-    image_filename = secure_filename(image_file.filename)
+    if valid:
+        return jsonify(msg=msg), 201
 
-    response = requests.post(
-        f"{request.url_root}/ringstech/api/v1/uploads",
-        headers={
-            # 'Content-Type': 'multipart/form-data'
-        },
-        files={"image": (image_filename, image_file.read())}
-    )
-
-    if response.status_code == 201:
-        file_name = response.json().get("file_name")
-        valid, msg = new_product(form=request.form, file_name=file_name)
-
-        if valid:
-            return jsonify(msg=msg), 201
-
-        return jsonify(msg=msg), 500
-
-    return jsonify(msg=response.content.decode())
+    return jsonify(msg=msg), 500
 
 
 @product_route.route("/", methods=["GET"])

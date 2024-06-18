@@ -41,7 +41,7 @@ class ProductForm(Form):
 
     is_available = BooleanField(
         "Product Is Available",
-        [validators.DataRequired("Product Availability is required!")],
+        [],
     )
 
 

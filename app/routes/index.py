@@ -34,7 +34,7 @@ def upload_image():
 
                 if allowed_file(
                     filename=file_name,
-                    ALLOWED_EXTENSIONS={
+                    allowed_extensions={
                             "jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp",
                             "ico", "svg", "psd", "eps", "ai", "raw"
                         },
