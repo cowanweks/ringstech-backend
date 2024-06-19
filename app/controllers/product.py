@@ -11,17 +11,20 @@ from app.utils import allowed_file
 def new_product(data: dict, files: dict):
     """A controller that handles new user registrations"""
 
-    allowed_extensions = {'txt', 'pdf', 'png', 'jpg',
-                          'jpeg', 'gif', 'webp',
-                          'avif', 'bmp',
+    allowed_extensions = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'webp',
+                            'avif', 'bmp', 'tiff', 'ico', 'svg', 'psd', 'eps',
+                            'ai', 'raw', 'heic', 'heif'
                           }
+
     file = files.get('product_image')
 
-    if file.filename == '':
-        return False, 'No selected file'
+    print(file)
 
     if not file:
         return False, 'No file received'
+
+    if file.filename == '':
+        return False, 'No selected file'
 
     if not allowed_file(file.filename, allowed_extensions):
         return False, 'File type or format not allowed allowed types are {}'.format(allowed_extensions)
