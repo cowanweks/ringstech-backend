@@ -13,7 +13,7 @@ def new_product(data: dict, files: dict):
 
     allowed_extensions = {'txt', 'pdf', 'png', 'jpg',
                           'jpeg', 'gif', 'webp',
-                          'avif', 'bmp'
+                          'avif', 'bmp',
                           }
     file = files.get('product_image')
 
