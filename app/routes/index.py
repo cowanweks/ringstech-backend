@@ -79,15 +79,11 @@ def delete_image(id):
 
 @index_route.route("/images/delete", methods=["DELETE"])
 def delete_all_images():
-    image = Image.query.all()
-
-    if not image:
-        return jsonify({'error': 'Image not found'}), 404
-
     try:
-        db.session.delete(image)
+        # Delete all records in the Image table
+        num_rows_deleted = db.session.query(Image).delete()
         db.session.commit()
-        return jsonify({'message': 'Image deleted successfully'}), 200
+        return jsonify({'message': 'All images deleted successfully', 'num_rows_deleted': num_rows_deleted}), 200
 
     except Exception as e:
         db.session.rollback()

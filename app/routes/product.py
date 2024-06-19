@@ -5,8 +5,7 @@ from app.controllers.product import (
     delete_product,
     update_product,
 )
-import requests
-from werkzeug.utils import secure_filename
+from app.models import db, Product
 
 # Units blueprint
 product_route = Blueprint(
@@ -62,3 +61,16 @@ def delete_product_route():
 
     else:
         return jsonify(msg=response), 500
+
+
+@product_route.route("/delete", methods=["DELETE"])
+def delete_all_products():
+    try:
+        # Delete all records in the Image table
+        num_rows_deleted = db.session.query(Product).delete()
+        db.session.commit()
+        return jsonify({'message': 'All products deleted successfully', 'num_rows_deleted': num_rows_deleted}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
