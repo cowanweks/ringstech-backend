@@ -1,21 +1,43 @@
 from uuid import uuid4
 from werkzeug.datastructures import MultiDict
-from app.models import db, Product
+from werkzeug.utils import secure_filename
+
+from app.models import db, Product, Image
 from app.forms.product import ProductForm, ProductUpdateForm
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from app.utils import save_image
+from app.utils import allowed_file
 
 
 def new_product(data: dict, files: dict):
     """A controller that handles new user registrations"""
 
+    allowed_extensions = {'txt', 'pdf', 'png', 'jpg',
+                          'jpeg', 'gif', 'webp',
+                          'avif', 'bmp'
+                          }
+    file = files.get('product_image')
+
+    if file.filename == '':
+        return False, 'No selected file'
+
+    if not file:
+        return False, 'No file received'
+
+    if not allowed_file(file.filename, allowed_extensions):
+        return False, 'File type or format not allowed allowed types are {}'.format(allowed_extensions)
+
     new_product_form = ProductForm(data)
 
     if new_product_form.validate():
 
-        file_name = save_image(files=files, file="product_image")
+        file_name = secure_filename(file.filename)
+        mimetype = file.mimetype
 
         try:
+            img = Image(id=file_name, image_name=file_name, image=file.read(), mimetype=mimetype)
+            db.session.add(img)
+            db.session.commit()
+
             product = Product(
                 product_id=str(uuid4()),
                 product_name=new_product_form.product_name.data,
@@ -30,7 +52,6 @@ def new_product(data: dict, files: dict):
                 cameras=new_product_form.cameras.data,
                 display=new_product_form.display.data,
                 processor=new_product_form.processor.data,
-                gamesIncluded=new_product_form.gamesIncluded.data,
                 ram=new_product_form.ram.data,
                 brand=new_product_form.brand.data,
                 model=new_product_form.model.data,

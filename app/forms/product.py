@@ -10,13 +10,13 @@ class ProductForm(Form):
     brand = StringField(
         "Product Brand", [validators.DataRequired("Product Brand is required!")]
     )
-    model = StringField("Product Model", [])
+    model = StringField("Product Model", [validators.DataRequired("Product Model is required!")])
     battery = StringField("Product Battery", [])
     cameras = StringField("Product Cameras", [])
+    product_image = FileField("Product Image", [])
     processor = StringField("Product Processor", [])
     display = StringField("Product Display", [])
     ram = StringField("Product RAM", [])
-    gamesIncluded = StringField("Product Games Included", [])
 
     product_name = StringField(
         "Product Name", [validators.DataRequired("Product Name is required!")]

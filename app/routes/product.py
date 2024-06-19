@@ -17,7 +17,7 @@ product_route = Blueprint(
 @product_route.route("/", methods=["POST"])
 def new_product_route():
     """New Unit"""
-    print(request.files)
+
     valid, msg = new_product(data=request.form, files=request.files)
 
     if valid:

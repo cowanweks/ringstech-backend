@@ -1,10 +1,12 @@
+import base64
 import json
 import datetime
 from dataclasses import dataclass
 from sqlalchemy.types import DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 from .extensions import db
-
+from sqlalchemy import LargeBinary
+import io
 
 @dataclass
 class Users(db.Model):
@@ -114,6 +116,17 @@ class Customer(db.Model):
         }
 
 
+class Image(db.Model):
+    """Model representing images"""
+
+    __tablename__ = 'images'
+
+    id = db.Column(db.Text, primary_key=True)
+    image_name = db.Column(db.Text, unique=True, nullable=False)
+    image = db.Column(LargeBinary, nullable=False)
+    mimetype = db.Column(db.Text, nullable=False)
+
+
 @dataclass
 class Product(db.Model):
     """Model Representing Staffs"""
@@ -124,19 +137,18 @@ class Product(db.Model):
     product_name: Mapped[str] = mapped_column(db.String(), nullable=False)
     product_unit_price: Mapped[str] = mapped_column(db.String(), nullable=False)
     description: Mapped[str] = mapped_column(db.String(), nullable=False)
-    product_category: Mapped[str] = mapped_column(db.String())
+    product_category: Mapped[str] = mapped_column(db.String(), nullable=False)
     available_colors: Mapped[str] = mapped_column(db.String())
     is_available: Mapped[bool] = mapped_column(db.Boolean())
     in_stock: Mapped[int] = mapped_column(db.Integer)
-    product_image: Mapped[str] = mapped_column(db.String, nullable=True)
-    model: Mapped[str] = mapped_column(db.String, nullable=True)
-    brand: Mapped[str] = mapped_column(db.String, nullable=True)
-    battery: Mapped[str] = mapped_column(db.String, nullable=True)
-    cameras: Mapped[str] = mapped_column(db.String, nullable=True)
-    processor: Mapped[str] = mapped_column(db.String, nullable=True)
-    display: Mapped[str] = mapped_column(db.String, nullable=True)
-    ram: Mapped[str] = mapped_column(db.String, nullable=True)
-    gamesIncluded: Mapped[str] = mapped_column(db.String, nullable=True)
+    product_image: Mapped[str] = mapped_column(db.String, nullable=False)
+    model: Mapped[str] = mapped_column(db.String, nullable=False)
+    brand: Mapped[str] = mapped_column(db.String, nullable=False)
+    battery: Mapped[str] = mapped_column(db.String, nullable=False)
+    cameras: Mapped[str] = mapped_column(db.String, nullable=False)
+    processor: Mapped[str] = mapped_column(db.String, nullable=False)
+    display: Mapped[str] = mapped_column(db.String, nullable=False)
+    ram: Mapped[str] = mapped_column(db.String, nullable=False)
 
     @property
     def available_colors_list(self):
@@ -165,8 +177,7 @@ class Product(db.Model):
             "cameras": self.cameras,
             "processor": self.processor,
             "display": self.display,
-            "ram": self.ram,
-            "gamesIncluded": self.gamesIncluded,
+            "ram": self.ram
         }
 
 
