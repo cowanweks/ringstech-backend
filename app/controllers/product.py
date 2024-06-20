@@ -19,8 +19,6 @@ def new_product(data: dict, files: dict):
 
     file = files.get('product_image')
 
-    print(file)
-
     if not file:
         return False, 'No file received'
 
@@ -38,7 +36,7 @@ def new_product(data: dict, files: dict):
         file_name = str(uuid4())
         extension = os.path.splitext(file.filename)[1]
 
-        file_name = "{}{}".format(file_name, extension)
+        file_name = secure_filename("{}{}".format(file_name, extension))
 
         try:
             img = Image(id=file_name, image_name=file_name, image=file.read(), mimetype=mimetype)
