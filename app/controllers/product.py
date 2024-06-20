@@ -1,3 +1,4 @@
+import os
 from uuid import uuid4
 from werkzeug.datastructures import MultiDict
 from werkzeug.utils import secure_filename
@@ -33,8 +34,11 @@ def new_product(data: dict, files: dict):
 
     if new_product_form.validate():
 
-        file_name = secure_filename(file.filename)
         mimetype = file.mimetype
+        file_name = str(uuid4())
+        extension = os.path.splitext(file.filename)[1]
+
+        file_name = "{}{}".format(file_name, extension)
 
         try:
             img = Image(id=file_name, image_name=file_name, image=file.read(), mimetype=mimetype)
@@ -77,7 +81,7 @@ def get_products(args: MultiDict[str, str]):
     """A controller that handles getting Products"""
 
     product_id = args.get("product_id")
-    product_category = args.get("product_category")
+    product_category = args.get("category")
 
     try:
         query = db.select(Product).order_by(Product.product_id)
