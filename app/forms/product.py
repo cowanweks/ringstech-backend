@@ -8,9 +8,9 @@ class ProductForm(Form):
         "Product in Stock", [validators.DataRequired("Product in Stock required!")]
     )
     brand = StringField(
-        "Product Brand", [validators.DataRequired("Product Brand is required!")]
+        "Product Brand", []
     )
-    model = StringField("Product Model", [validators.DataRequired("Product Model is required!")])
+    model = StringField("Product Model", [])
     battery = StringField("Product Battery", [])
     cameras = StringField("Product Cameras", [])
     product_image = FileField("Product Image", [])
