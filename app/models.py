@@ -150,6 +150,7 @@ class Product(db.Model):
     display: Mapped[str] = mapped_column(db.String, nullable=False)
     ram: Mapped[str] = mapped_column(db.String, nullable=False)
 
+
     @property
     def available_colors_list(self):
         if self.available_colors:
