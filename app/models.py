@@ -163,15 +163,15 @@ class Product(db.Model):
 
     def serialize(self):
         return {
-            "productID": self.product_id,
-            "productName": self.product_name,
-            "unitPrice": self.product_unit_price,
+            "product_id": self.product_id,
+            "product_name": self.product_name,
+            "product_unit_price": self.product_unit_price,
             "description": self.description,
-            "productCategory": self.product_category,
-            "availableColors": self.available_colors,
-            "isAvailable": self.is_available,
-            "inStock": self.in_stock,
-            "productImage": self.product_image,
+            "product_category": self.product_category,
+            "available_colors": self.available_colors,
+            "is_available": self.is_available,
+            "in_stock": self.in_stock,
+            "product_image": self.product_image,
             "brand": self.brand,
             "model": self.model,
             "battery": self.battery,
