@@ -54,7 +54,7 @@ def add_item_to_cart_route():
 
         db.session.commit()
 
-        return jsonify(msg="Successfully Added item to cart"), 200
+        return jsonify(msg="Successfully Added item {} to cart {}".format(cart_item.item_id, cart_item.cart_id)), 200
 
     except Exception as ex:
         print(ex)
