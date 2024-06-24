@@ -33,4 +33,4 @@ class ProductionConfig(Config):
     ENV = "production"
     DEBUG = False
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = "postgres://ohvomqcn:zy3VFG-FlCYScCpEyyGRT3xwehbvZ-Au@suleiman.db.elephantsql.com/ohvomqcn"
+    SQLALCHEMY_DATABASE_URI = "postgresql://ohvomqcn:zy3VFG-FlCYScCpEyyGRT3xwehbvZ-Au@suleiman.db.elephantsql.com/ohvomqcn"
