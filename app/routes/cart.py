@@ -1,8 +1,9 @@
+import os
+
 from flask import (
     Blueprint,
     request,
     jsonify,
-    session
 )
 import requests
 from uuid import uuid4
@@ -11,7 +12,7 @@ from app.forms.order import OrderForm
 from sqlalchemy.exc import IntegrityError
 from app.models import db, Cart, CartItem, Product
 
-BASE_URL = "https://samsungrepair-backend-35d7356462b8.herokuapp.com//"
+BASE_URL = os.getenv("BASE_URL")
 
 cart_route = Blueprint("cart_route", __name__, url_prefix="/ringstech/api/v1/cart")
 

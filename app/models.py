@@ -261,6 +261,8 @@ class CartItem(db.Model):
             "product_unit_price": self.price(),
             "color": self.color,
             "product_name": self.product_name,
+            "brand": db.session.query(Product.brand).filter_by(product_id=self.product_id).scalar(),
+            "model": db.session.query(Product.model).filter_by(product_id=self.product_id).scalar(),
             "product_image": db.session.query(Product.product_image).filter_by(product_id=self.product_id).scalar(),
             "created_at": self.created_at
         }

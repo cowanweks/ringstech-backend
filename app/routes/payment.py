@@ -12,7 +12,7 @@ from uuid import uuid4
 # Payment blueprint
 payment_route = Blueprint("payment_route", __name__, url_prefix="/ringstech/api/v1/payment")
 
-BASE_URL = "https://samsungrepair-backend-35d7356462b8.herokuapp.com/"
+BASE_URL = os.getenv("BASE_URL")
 
 
 def get_mpesa_access_token():

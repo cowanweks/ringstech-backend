@@ -12,7 +12,7 @@ class OrderForm(Form):
 
     first_name = StringField(
         "First Name",
-        [validators.DataRequired("Product Quantity is required!")],
+        [validators.DataRequired("First Name is required!")],
     )
 
     middle_name = StringField(
