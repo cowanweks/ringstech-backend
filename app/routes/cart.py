@@ -91,6 +91,8 @@ def checkout_cart():
     if not cart_id:
         return jsonify(error="Cart ID Required")
 
+    print(cart_id)
+
     cart = db.session.query(Cart).filter_by(cart_id=cart_id).scalar()
 
     if not cart:
@@ -101,7 +103,7 @@ def checkout_cart():
     try:
         new_order_form = OrderForm(request.form)
 
-        payment_url = (BASE_URL + "/ringstech/api/v1/payment/pay?phone_number={}&total_amount={}"
+        payment_url = (BASE_URL + "/payment/pay?phone_number={}&total_amount={}"
          .format(new_order_form.mpesa_number.data, total_amount))
 
         print(payment_url)

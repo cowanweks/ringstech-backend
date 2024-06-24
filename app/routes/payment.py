@@ -52,8 +52,8 @@ def register_urls_route():
     req_body = {
         "ShortCode": "601426",
         "ResponseType": "Completed",
-        "ConfirmationURL": BASE_URL + "/ringstech/api/v1/payment/confirm",
-        "ValidationURL": BASE_URL + "/ringstech/api/v1/payment/validate"
+        "ConfirmationURL": BASE_URL + "/payment/confirm",
+        "ValidationURL": BASE_URL + "/payment/validate"
     }
 
     response_data = requests.post(mpesa_endpoint_url, headers=req_headers, json=req_body)

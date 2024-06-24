@@ -95,12 +95,15 @@ def delete_all_images():
 @index_route.route("/create_cart")
 def create_cart():
     """Route to create route"""
-    if "cart_id" not in session:
-        cart_id = str(uuid4())
-        cart = Cart(cart_id=cart_id)
+    cart_id = str(uuid4())
+    cart = Cart(cart_id=cart_id)
 
+    try:
         # Save cart to database
         db.session.add(cart)
         db.session.commit()
         session["cart_id"] = cart_id
         return jsonify(session_id=session.sid, cart_id=cart_id)
+
+    except Exception as ex:
+        return jsonify(error=str(ex))
