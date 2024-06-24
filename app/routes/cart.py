@@ -11,7 +11,7 @@ from app.forms.order import OrderForm
 from sqlalchemy.exc import IntegrityError
 from app.models import db, Cart, CartItem, Product
 
-BASE_URL = "http://192.168.0.107:3000/"
+BASE_URL = "https://samsungrepair-backend-35d7356462b8.herokuapp.com//"
 
 cart_route = Blueprint("cart_route", __name__, url_prefix="/ringstech/api/v1/cart")
 
