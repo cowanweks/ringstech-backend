@@ -247,7 +247,7 @@ class CartItem(db.Model):
     color = db.Column(db.String, nullable=True)
     created_at = db.Column(DateTime(timezone=True), default=datetime.datetime.now())
 
-    def price(self):
+    def price(self) -> float:
         """Get product price"""
         price = db.session.query(Product.product_unit_price).filter_by(product_id=self.product_id).scalar()
         return price
