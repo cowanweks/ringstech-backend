@@ -33,4 +33,4 @@ class ProductionConfig(Config):
     ENV = "production"
     DEBUG = False
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = "sqlite:///ringstech.db"
+    SQLALCHEMY_DATABASE_URI = "postgres://ohvomqcn:zy3VFG-FlCYScCpEyyGRT3xwehbvZ-Au@suleiman.db.elephantsql.com/ohvomqcn"
