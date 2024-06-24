@@ -9,10 +9,10 @@ class Config(DBConfig):
     HOST = "0.0.0.0"
 
     # Session settings
-    # SESSION_TYPE = "cachelib"
-    # SESSION_USE_SIGNER = True
-    # SESSION_SERIALIZATION_FORMAT = "json"
-    # SESSION_CACHELIB = FileSystemCache(threshold=500, cache_dir="sessions")
+    SESSION_TYPE = "cachelib"
+    SESSION_USE_SIGNER = True
+    SESSION_SERIALIZATION_FORMAT = "json"
+    SESSION_CACHELIB = FileSystemCache(threshold=500, cache_dir="sessions")
 
     APP_NAME = "RingsTech"
 

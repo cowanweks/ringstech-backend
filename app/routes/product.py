@@ -29,12 +29,24 @@ def new_product_route():
 def get_products_route():
     """Get Units"""
 
-    valid, response = get_products(request.args)
+    product_id = request.args.get("product_id")
+    product_category = request.args.get("category")
 
-    if valid:
-        return jsonify(response), 200
+    try:
+        query = db.select(Product).order_by(Product.product_id)
 
-    return jsonify(msg=response), 500
+        if product_id:
+            query = query.where(Product.product_id == product_id)
+        if product_category:
+            query = query.where(Product.product_category == product_category)
+
+        products = db.session.execute(query).scalars().all()
+        serialized_products = [product.serialize() for product in products]
+        return jsonify(serialized_products), 200
+
+    except Exception as ex:
+        print(ex)
+        return jsonify(msg=str(ex)), 500
 
 
 @product_route.route("/", methods=["PUT", "PATCH"])
