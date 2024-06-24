@@ -163,7 +163,7 @@ class Product(db.Model):
             "product_unit_price": self.product_unit_price,
             "description": self.description,
             "product_category": self.product_category,
-            "available_colors": self.available_colors_list,
+            "available_colors": "",
             "is_available": self.is_available,
             "in_stock": self.in_stock,
             "product_image": self.product_image,
