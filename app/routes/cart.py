@@ -36,12 +36,12 @@ def add_item_to_cart_route():
     product = (db.session.query(Product).filter_by(product_id=product_id).scalar())
 
     cart_item = CartItem(item_id=str(uuid4()),
+                         cart_id=cart_id,
                          product_id=product_id,
                          product_name=product.product_name,
                          color=color,
                          quantity=quantity,
                          price=product.product_unit_price,
-                         cart_id=cart_id
                          )
 
     try:
