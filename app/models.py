@@ -8,7 +8,7 @@ from .extensions import db
 from sqlalchemy import LargeBinary
 import io
 
-@dataclass
+
 class Users(db.Model):
     """Model Representing Users"""
 
@@ -30,7 +30,6 @@ class Users(db.Model):
         }
 
 
-@dataclass
 class Address(db.Model):
     """Model Representing Users"""
 
@@ -60,7 +59,6 @@ class Address(db.Model):
         }
 
 
-@dataclass
 class ShippingAddress(Address):
     """Model Representing Shipping Address"""
 
@@ -84,7 +82,6 @@ class ShippingAddress(Address):
         }
 
 
-@dataclass
 class Customer(db.Model):
     """Model Representing Users"""
 
@@ -127,7 +124,6 @@ class Image(db.Model):
     mimetype = db.Column(db.Text, nullable=False)
 
 
-@dataclass
 class Product(db.Model):
     """Model Representing Staffs"""
 
@@ -150,7 +146,6 @@ class Product(db.Model):
     display: Mapped[str] = mapped_column(db.String, nullable=True)
     ram: Mapped[str] = mapped_column(db.String, nullable=True)
 
-
     @property
     def available_colors_list(self):
         if self.available_colors:
@@ -168,7 +163,7 @@ class Product(db.Model):
             "product_unit_price": self.product_unit_price,
             "description": self.description,
             "product_category": self.product_category,
-            "available_colors": self.available_colors,
+            "available_colors": self.available_colors_list,
             "is_available": self.is_available,
             "in_stock": self.in_stock,
             "product_image": self.product_image,
@@ -182,17 +177,26 @@ class Product(db.Model):
         }
 
 
-@dataclass
 class Order(db.Model):
     """Model representing an order"""
 
     __tablename__ = "orders"
 
-    order_id: Mapped[str] = mapped_column(db.String, primary_key=True, nullable=False)
-    color: Mapped[str] = mapped_column(db.String)
-    product_id: Mapped[str] = mapped_column(db.String)
-    quantity: Mapped[int] = mapped_column(db.Integer)
-    shipping_address: Mapped[str] = mapped_column(db.String)
+    order_id = db.Column(db.String, primary_key=True, nullable=False)
+    cart_id = db.Column(db.String)
+    total_amount = db.Column(db.Numeric)
+    first_name = db.Column(db.String)
+    middle_name = db.Column(db.String)
+    last_name = db.Column(db.String)
+    street_address = db.Column(db.String)
+    city = db.Column(db.String)
+    zip_code = db.Column(db.String)
+    state_or_province = db.Column(db.String)
+    email_address = db.Column(db.String)
+    phone_number = db.Column(db.String)
+    status = db.Column(db.String, default="Processing")
+    payment_status = db.Column(db.String, default="NOT PAID")
+    tracking_number = db.Column(db.String)
     created_at: Mapped[str] = mapped_column(
         DateTime(timezone=True), default=datetime.datetime.now()
     )
@@ -200,15 +204,21 @@ class Order(db.Model):
     def serialize(self):
         return {
             "order_id": self.order_id,
-            "product_id": self.product_id,
-            "quantity": self.quantity,
-            "color": self.color,
+            "cart_id": self.cart_id,
+            "email_address": self.email_address,
+            "phone": self.phone_number,
+            "state_or_province": self.state_or_province,
+            "street_address": self.street_address,
+            "city": self.city,
+            "zipcode": self.zipcode,
+            "first_name": self.first_name,
+            "middle_name": self.middle_name,
+            "status": self.last_name,
             "created_at": self.created_at,
             "shipping_address": self.shipping_address,
         }
 
 
-@dataclass
 class Roles(db.Model):
     """Model Representing Roles available to registered users"""
 
@@ -223,3 +233,60 @@ class Roles(db.Model):
             "role_id": self.role_id,
             "role_name": self.role_name,
         }
+
+
+class CartItem(db.Model):
+    """Cart Model"""
+    __tablename__ = 'cart_items'
+
+    item_id = db.Column(db.String, primary_key=True)
+    cart_id = db.Column(db.String, nullable=False)
+    product_id = db.Column(db.String, nullable=False)
+    product_name = db.Column(db.String, nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    color = db.Column(db.String, nullable=True)
+    created_at = db.Column(DateTime(timezone=True), default=datetime.datetime.now())
+
+    def price(self):
+        """Get product price"""
+        price = db.session.query(Product.product_unit_price).filter_by(product_id=self.product_id).scalar()
+        return price
+
+    def serialize(self):
+        return {
+            "item_id": self.item_id,
+            "cart_id": self.cart_id,
+            "product_id": self.item_id,
+            "quantity": self.quantity,
+            "price": self.price(),
+            "color": self.color,
+            "product_name": self.product_name,
+            "product-image": db.session.query(Product.product_image).filter_by(product_id=self.product_id).scalar(),
+            "created_at": self.created_at
+        }
+
+
+class Cart(db.Model):
+    """Cart Model"""
+    __tablename__ = 'cart'
+    cart_id = db.Column(db.String, primary_key=True)
+    created_at = db.Column(DateTime(timezone=True), default=datetime.datetime.now())
+
+    def serialize(self):
+        return {
+            "cart_id": self.cart_id,
+            "created_at": self.created_at
+        }
+
+    @property
+    def total_amount(self) -> float:
+        """Get the total amount of a cart item"""
+        cart_items = db.session.query(CartItem).filter_by(cart_id=self.cart_id).all()
+        total: float = 0.0
+
+        for item in cart_items:
+            product_unit_price = (db.session.query(Product.product_unit_price)
+                                  .filter_by(product_id=item.product_id).scalar())
+            total += item.quantity * float(product_unit_price)
+
+        return total

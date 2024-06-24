@@ -2,10 +2,12 @@ from flask import (
     Blueprint,
     request,
     jsonify,
+    session,
     render_template, Response,
 )
 from app.models import Image,db
-
+from uuid import uuid4
+from app.models import Cart
 from app.controllers.login import login, logout
 
 
@@ -88,3 +90,17 @@ def delete_all_images():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
+
+@index_route.route("/create_cart")
+def create_cart():
+    """Route to create route"""
+    if "cart_id" not in session:
+        cart_id = str(uuid4())
+        cart = Cart(cart_id=cart_id)
+
+        # Save cart to database
+        db.session.add(cart)
+        db.session.commit()
+        session["cart_id"] = cart_id
+        return jsonify(session_id=session.sid, cart_id=cart_id)

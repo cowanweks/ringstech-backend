@@ -1,23 +1,33 @@
 import os
+import secrets
 from flask import Flask
 from .extensions import cors, db, sess, folder_setup
 from app.routes import (
     index_route,
+    cart_route,
     user_route,
     role_route,
     order_route,
     product_route,
+    payment_route
 )  # Routes
 from app.errors.error_handlers import not_found  # Error Handlers
 from app.config import ProductionConfig, DevelopmentConfig, TestingConfig
 from app.utils.app_utils import app_setup
 from app.utils import bcolors
+from cachelib.file import FileSystemCache
 
 
 # Create application and return it.
 @app_setup
 def create_app() -> Flask:
     app = Flask(__name__)
+
+    app.config["SECRET_KEY"] = secrets.token_hex(16)
+    app.config["SESSION_TYPE"] = "cachelib"
+    app.config["SESSION_USE_SIGNER"] = True
+    app.config["SESSION_SERIALIZATION_FORMAT"] = "json"
+    app.config["SESSION_CACHELIB"] = FileSystemCache(threshold=500, cache_dir="sessions")
 
     # Prevent redirects in blueprints
     app.url_map.strict_slashes = False
@@ -37,10 +47,12 @@ def create_app() -> Flask:
 
     # Register blueprints
     app.register_blueprint(index_route)
+    app.register_blueprint(cart_route)
     app.register_blueprint(user_route)
     app.register_blueprint(role_route)
     app.register_blueprint(order_route)
     app.register_blueprint(product_route)
+    app.register_blueprint(payment_route)
 
     # Register error handlers
     app.register_error_handler(404, not_found)
@@ -54,7 +66,7 @@ def create_app() -> Flask:
         db.create_all()
 
     print(
-        bcolors.WARNING
+        bcolors.OKGREEN
         + f"""[*] - You are running {app.config.get('APP_NAME')} in {app.config.get('ENV')} on HOST {app.config.get("HOST")} on PORT {app.config.get("PORT")} !"""
     )
 
