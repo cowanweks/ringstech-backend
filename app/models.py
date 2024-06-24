@@ -258,7 +258,7 @@ class CartItem(db.Model):
             "cart_id": self.cart_id,
             "product_id": self.item_id,
             "quantity": self.quantity,
-            "price": self.price(),
+            "product_unit_price": self.price(),
             "color": self.color,
             "product_name": self.product_name,
             "product_image": db.session.query(Product.product_image).filter_by(product_id=self.product_id).scalar(),
