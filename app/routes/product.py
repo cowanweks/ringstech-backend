@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app.controllers.product import (
     new_product,
-    get_products,
     delete_product,
     update_product,
 )
@@ -17,12 +16,12 @@ product_route = Blueprint(
 def new_product_route():
     """New Unit"""
 
-    valid, msg = new_product(data=request.form, files=request.files)
+    valid, msg = new_product(request)
 
     if valid:
-        return jsonify(msg=msg), 201
+        return jsonify(msg), 201
 
-    return jsonify(msg=msg), 500
+    return jsonify(msg), 500
 
 
 @product_route.route("/", methods=["GET"])
@@ -46,7 +45,7 @@ def get_products_route():
 
     except Exception as ex:
         print(ex)
-        return jsonify(msg=str(ex)), 500
+        return jsonify(str(ex)), 500
 
 
 @product_route.route("/", methods=["PUT", "PATCH"])

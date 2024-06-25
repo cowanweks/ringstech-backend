@@ -48,7 +48,7 @@ def get_access_token_route():
 def register_urls_route():
     mpesa_endpoint_url = "https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl"
     access_token = get_mpesa_access_token()
-    req_headers = {"Authorization": "Bearer %s" % access_token }
+    req_headers = {"Authorization": "Bearer %s" % access_token}
     req_body = {
         "ShortCode": "601426",
         "ResponseType": "Completed",
@@ -63,6 +63,8 @@ def register_urls_route():
 @payment_route.route("/confirm")
 def confirm_payment_route():
     data = request.json()
+
+    print(data)
 
     with open(os.path.join(current_app.instance_path, "confirm.json"), "a") as fd:
         fd.write(json.dumps(data))
@@ -105,14 +107,54 @@ def simulate_route():
     return response.json()
 
 
+@payment_route.route("/checkstatus/<checkout_request_id>")
+def check_payment_status(checkout_request_id):
+    # Endpoint for querying transaction status
+    endpoint = f'{BASE_URL}/mpesa/stkpushquery/v1/query'
+    access_token = get_mpesa_access_token()
+
+    # Prepare headers
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+
+    # Prepare request payload
+    payload = {
+        'BusinessShortCode': 'your_business_shortcode',
+        'Password': 'your_password',
+        'Timestamp': 'yyyymmddhhmmss',
+        'CheckoutRequestID': checkout_request_id
+    }
+
+    try:
+        response = requests.post(endpoint, json=payload, headers=headers)
+        response_data = response.json()
+        print(response_data)
+
+        # Check if payment is successful
+        if response_data['ResultCode'] == '0' and response_data[
+            'ResultDesc'] == 'The service request is processed successfully.':
+            return True
+        else:
+            return False
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error querying transaction status: {e}")
+        return False
+
+
 @payment_route.route("/pay")
 def pay_route():
-
     phone_number = request.args.get("phone_number")
     total_amount = request.args.get("total_amount")
+    transaction_description = request.args.get("transaction_description")
+
+    if transaction_description is None:
+        transaction_description = ""
 
     if not phone_number:
-        return jsonify(error="Phone number not provided"), 400
+        return jsonify("Phone number not provided"), 400
 
     my_endpoint = BASE_URL + "/ringstech/api/v1/payment/success"
     mpesa_endpoint_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
@@ -135,8 +177,8 @@ def pay_route():
         "PartyB": "174379",
         "PhoneNumber": phone_number,
         "CallBackURL": my_endpoint,
-        "AccountReference": "TestPay",
-        "TransactionDesc": "HelloTest",
+        "AccountReference": "353 562",
+        "TransactionDesc": "Purchased {}".format(transaction_description),
         "Amount": total_amount
     }
 

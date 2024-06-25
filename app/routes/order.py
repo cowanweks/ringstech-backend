@@ -1,10 +1,7 @@
-from flask import Blueprint, request, jsonify
-from sqlalchemy.exc import SQLAlchemyError
-from app.extensions import db
-from app.models import Order
+from flask import request, jsonify, Blueprint
+from app.models import db, Order
 
-# Orders blueprint
-order_route = Blueprint("order_route", __name__, url_prefix="/ringstech/api/v1/orders")
+order_route = Blueprint("order_route", __name__, url_prefix="/ringstech/api/v1/order")
 
 
 @order_route.route("/", methods=["GET"])
@@ -15,33 +12,24 @@ def get_orders_route():
 
     try:
         if order_id:
-            orders = (
-                db.session.execute(
-                    db.select(Order)
-                    .where(Order.order_id == order_id)
-                    .order_by(Order.order_id)
-                )
-                .scalars()
-                .all()
-            )
+
+            orders = db.session.query(Order).filter_by(Order.order_id == order_id).scalar()
+
         else:
-            orders = (
-                db.session.execute(db.select(Order).order_by(Order.order_id))
-                .scalars()
-                .all()
-            )
+
+            orders = db.session.query(Order).order_by(Order.order_id).all()
 
         serialized_orders = [order.serialize() for order in orders]
         return jsonify(serialized_orders), 200
 
     except Exception as ex:
         print(ex)
-        return jsonify("Database error occurred! {}".format(ex)), 500
+        return jsonify(str(ex)), 500
 
 
 @order_route.route("/", methods=["DELETE"])
 def delete_order_route():
-    """Delete Unit"""
+    """Delete Order"""
 
     order_id = request.args.get("order_id")
 
@@ -53,6 +41,38 @@ def delete_order_route():
         db.session.commit()
         return jsonify("Successfully Deleted Order!"), 300
 
-    except SQLAlchemyError as ex:
+    except Exception as ex:
         print(ex)
-        return jsonify("Database error occurred!"), 500
+        return jsonify(str(ex)), 500
+
+
+@order_route.route("/complete_order", methods=["GET"])
+def complete_order():
+    order_id = request.args.get("order_id")
+
+    try:
+        if order_id is None:
+            return jsonify("Cart ID Not Provided")
+
+        db.session.query(Order).filter(Order.order_id == order_id).update({'completed': True})
+        db.session.commit()
+
+    except Exception as ex:
+        print(ex)
+        return jsonify(str(ex))
+
+
+@order_route.route("/update_payment_status", methods=["GET"])
+def update_payment_status():
+    order_id = request.args.get("order_id")
+
+    try:
+        if order_id is None:
+            return jsonify("Cart ID Not Provided")
+
+        db.session.query(Order).filter(Order.order_id == order_id).update({'completed': True})
+        db.session.commit()
+
+    except Exception as ex:
+        print(ex)
+        return jsonify()

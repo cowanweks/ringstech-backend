@@ -3,9 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from app.extensions.folder_extension import FolderSetup
 from app.extensions.db_extension import Base
 from flask_cors import CORS
-
+from flask_wtf.csrf import CSRFProtect
 
 sess = Session()
 db = SQLAlchemy(model_class=Base)
 folder_setup = FolderSetup()
-cors = CORS(origins=['*'], methods=['GET', 'POST', 'PUT', 'DELETE'])
+cors = CORS()

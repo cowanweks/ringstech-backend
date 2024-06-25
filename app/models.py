@@ -2,6 +2,8 @@ import base64
 import json
 import datetime
 from dataclasses import dataclass
+
+from flask import jsonify
 from sqlalchemy.types import DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 from .extensions import db
@@ -129,22 +131,22 @@ class Product(db.Model):
 
     __tablename__ = "products"
 
-    product_id: Mapped[str] = mapped_column(db.String(), primary_key=True)
-    product_name: Mapped[str] = mapped_column(db.String(), nullable=False)
-    product_unit_price: Mapped[str] = mapped_column(db.String(), nullable=False)
-    description: Mapped[str] = mapped_column(db.String(), nullable=False)
-    product_category: Mapped[str] = mapped_column(db.String(), nullable=False)
-    available_colors: Mapped[str] = mapped_column(db.String(), nullable=False)
-    is_available: Mapped[bool] = mapped_column(db.Boolean(),nullable=False)
-    in_stock: Mapped[int] = mapped_column(db.Integer, nullable=False)
-    product_image: Mapped[str] = mapped_column(db.String, nullable=False)
-    model: Mapped[str] = mapped_column(db.String, nullable=True)
-    brand: Mapped[str] = mapped_column(db.String, nullable=True)
-    battery: Mapped[str] = mapped_column(db.String, nullable=True)
-    cameras: Mapped[str] = mapped_column(db.String, nullable=True)
-    processor: Mapped[str] = mapped_column(db.String, nullable=True)
-    display: Mapped[str] = mapped_column(db.String, nullable=True)
-    ram: Mapped[str] = mapped_column(db.String, nullable=True)
+    product_id = db.Column(db.String, primary_key=True)
+    product_name = db.Column(db.String, nullable=False)
+    product_unit_price = db.Column(db.Numeric, nullable=False)
+    description = db.Column(db.String, nullable=False)
+    product_category = db.Column(db.String, nullable=False)
+    available_colors = db.Column(db.String, nullable=False)
+    is_available = db.Column(db.Boolean,nullable=False)
+    in_stock = db.Column(db.Integer, nullable=False)
+    product_image = db.Column(db.String, nullable=False)
+    model = db.Column(db.String, nullable=True)
+    brand = db.Column(db.String, nullable=True)
+    battery = db.Column(db.String, nullable=True)
+    cameras = db.Column(db.String, nullable=True)
+    processor = db.Column(db.String, nullable=True)
+    display = db.Column(db.String, nullable=True)
+    ram = db.Column(db.String, nullable=True)
 
     @property
     def available_colors_list(self):
@@ -163,7 +165,7 @@ class Product(db.Model):
             "product_unit_price": self.product_unit_price,
             "description": self.description,
             "product_category": self.product_category,
-            "available_colors": "",
+            "available_colors": self.available_colors_list,
             "is_available": self.is_available,
             "in_stock": self.in_stock,
             "product_image": self.product_image,
@@ -191,17 +193,19 @@ class Order(db.Model):
     street_address = db.Column(db.String)
     city = db.Column(db.String)
     zip_code = db.Column(db.String)
-    state_or_province = db.Column(db.String)
-    email_address = db.Column(db.String)
-    phone_number = db.Column(db.String)
+    state_or_province = db.Column(db.String, nullable=False)
+    email_address = db.Column(db.String, nullable=False)
+    phone_number = db.Column(db.String, nullable=False)
     status = db.Column(db.String, default="Processing")
-    payment_status = db.Column(db.String, default="NOT PAID")
+    shipped = db.Column(db.Boolean, default=False)
+    payment_status = db.Column(db.String, default="not_completed")
     tracking_number = db.Column(db.String)
     created_at: Mapped[str] = mapped_column(
         DateTime(timezone=True), default=datetime.datetime.now()
     )
 
     def serialize(self):
+
         return {
             "order_id": self.order_id,
             "cart_id": self.cart_id,
@@ -272,6 +276,7 @@ class Cart(db.Model):
     """Cart Model"""
     __tablename__ = 'cart'
     cart_id = db.Column(db.String, primary_key=True)
+    checked_out = db.Column(db.Boolean, default=False)
     created_at = db.Column(DateTime(timezone=True), default=datetime.datetime.now())
 
     def serialize(self):

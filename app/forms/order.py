@@ -1,10 +1,30 @@
+import re
+import phonenumbers
 from wtforms import Form, StringField, validators
 from wtforms.validators import ValidationError
 
 
 def at_least_one_filled(form, field):
     if not form.phone_number.data and not form.email_address.data:
-        raise ValidationError('Either phone number or email address must be provided.')
+        raise ValidationError("Either phone number or email address must be provided.")
+
+
+def validate_mpesa_phone(phone: str):
+
+    try:
+        # Remove any non-digit characters
+        cleaned_phone_number = re.sub(r'\D', '', phone)
+
+        # Define the regex pattern for Kenyan phone numbers
+        pattern = r'^(254)([71][0-9]{8})$'
+        regex = re.compile(pattern)
+
+        # Check if the cleaned phone number matches the pattern
+        if not regex.match(cleaned_phone_number):
+            raise ValidationError('Invalid Kenyan phone number format')
+
+    except Exception as ex:
+        print(ex)
 
 
 class OrderForm(Form):
@@ -43,14 +63,14 @@ class OrderForm(Form):
     )
     email_address = StringField(
         "Email Address",
-        [validators.Optional(), at_least_one_filled, validators.Email()],
+        [validators.DataRequired("Email Address Required!"), validators.Email()],
     )
     phone_number = StringField(
         "Phone Number",
-        [validators.Optional(), at_least_one_filled],
+        [validators.DataRequired("Phone Number Required!")],
     )
 
     mpesa_number = StringField(
         "Mpesa Number",
-        [validators.DataRequired("Mpesa Mobile Number Required"), at_least_one_filled],
+        [validators.DataRequired("Mpesa Mobile Number Required"), validate_mpesa_phone],
     )

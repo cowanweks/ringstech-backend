@@ -1,5 +1,7 @@
 import os
 from uuid import uuid4
+
+from flask import Request
 from werkzeug.datastructures import MultiDict
 from werkzeug.utils import secure_filename
 
@@ -9,37 +11,23 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from app.utils import allowed_file
 
 
-def new_product(data: dict, files: dict):
+def new_product(data: Request):
     """A controller that handles new user registrations"""
 
-    allowed_extensions = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'webp',
-                            'avif', 'bmp', 'tiff', 'ico', 'svg', 'psd', 'eps',
-                            'ai', 'raw', 'heic', 'heif'
-                          }
-
-    file = files.get('product_image')
-
-    if not file:
-        return False, 'No file received'
-
-    if file.filename == '':
-        return False, 'No selected file'
-
-    if not allowed_file(file.filename, allowed_extensions):
-        return False, 'File type or format not allowed allowed types are {}'.format(allowed_extensions)
-
-    new_product_form = ProductForm(data)
+    new_product_form = ProductForm()
 
     if new_product_form.validate():
 
-        mimetype = file.mimetype
+        product_image = new_product_form.product_image.data
+
+        mimetype = product_image.mimetype
         file_name = str(uuid4())
-        extension = os.path.splitext(file.filename)[1]
+        extension = os.path.splitext(product_image.filename)[1]
 
         file_name = secure_filename("{}{}".format(file_name, extension))
 
         try:
-            img = Image(id=file_name, image_name=file_name, image=file.read(), mimetype=mimetype)
+            img = Image(id=file_name, image_name=file_name, image=product_image.read(), mimetype=mimetype)
             db.session.add(img)
             db.session.commit()
 

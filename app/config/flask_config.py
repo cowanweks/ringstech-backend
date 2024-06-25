@@ -7,6 +7,7 @@ class Config(DBConfig):
     DEBUG = True
     TESTING = False
     HOST = "0.0.0.0"
+    WTF_CSRF_ENABLED = False
 
     # Session settings
     SESSION_TYPE = "cachelib"

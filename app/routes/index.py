@@ -3,9 +3,10 @@ from flask import (
     request,
     jsonify,
     session,
-    render_template, Response,
+    render_template,
+    Response,
 )
-from app.models import Image,db
+from app.models import Image, db
 from uuid import uuid4
 from app.models import Cart
 from app.controllers.login import login, logout
@@ -45,7 +46,6 @@ def signout_user():
 
 @index_route.route("/images", methods=["GET"])
 def get_image():
-
     image_id = request.args.get("id")
 
     if image_id:
@@ -63,20 +63,19 @@ def get_image():
 
 @index_route.route("/images/<id>", methods=["DELETE"])
 def delete_image(id):
-
     image = Image.query.get(id)
 
     if not image:
-        return jsonify({'error': 'Image not found'}), 404
+        return jsonify({"error": "Image not found"}), 404
 
     try:
         db.session.delete(image)
         db.session.commit()
-        return jsonify({'message': 'Image deleted successfully'}), 200
+        return jsonify({"message": "Image deleted successfully"}), 200
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({"error": str(e)}), 500
 
 
 @index_route.route("/images/delete", methods=["DELETE"])
@@ -85,25 +84,28 @@ def delete_all_images():
         # Delete all records in the Image table
         num_rows_deleted = db.session.query(Image).delete()
         db.session.commit()
-        return jsonify({'message': 'All images deleted successfully', 'num_rows_deleted': num_rows_deleted}), 200
+        return jsonify(
+            {
+                "message": "All images deleted successfully",
+                "num_rows_deleted": num_rows_deleted,
+            }
+        ), 200
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({"error": str(e)}), 500
 
 
 @index_route.route("/create_cart")
 def create_cart():
     """Route to create route"""
-    cart_id = str(uuid4())
-    cart = Cart(cart_id=cart_id)
 
     try:
+        cart = Cart(cart_id=str(uuid4()))
         # Save cart to database
         db.session.add(cart)
         db.session.commit()
-        session["cart_id"] = cart_id
-        return jsonify(session_id=session.sid, cart_id=cart_id)
+        return jsonify(session_id=session.sid, cart_id=cart.cart_id)
 
     except Exception as ex:
         return jsonify(error=str(ex))

@@ -7,7 +7,6 @@ from app.routes import (
     cart_route,
     user_route,
     role_route,
-    order_route,
     product_route,
     payment_route
 )  # Routes
@@ -50,7 +49,6 @@ def create_app() -> Flask:
     app.register_blueprint(cart_route)
     app.register_blueprint(user_route)
     app.register_blueprint(role_route)
-    app.register_blueprint(order_route)
     app.register_blueprint(product_route)
     app.register_blueprint(payment_route)
 
@@ -69,5 +67,10 @@ def create_app() -> Flask:
         bcolors.OKGREEN
         + f"""[*] - You are running {app.config.get('APP_NAME')} in {app.config.get('ENV')} on HOST {app.config.get("HOST")} on PORT {app.config.get("PORT")} !"""
     )
+
+    @app.after_request
+    def after_request(response):
+
+        return response
 
     return app
