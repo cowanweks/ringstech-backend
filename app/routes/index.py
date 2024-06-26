@@ -109,3 +109,23 @@ def create_cart():
 
     except Exception as ex:
         return jsonify(error=str(ex))
+
+
+@index_route.route("/check_cart")
+def check_cart_exists():
+    """Route to create route"""
+
+    cart_id = request.args.get("cart_id")
+
+    if not cart_id:
+        return jsonify("Cart ID is required"), 400
+
+    try:
+        cart = db.session.query(Cart).filter_by(cart_id=cart_id).scalar()
+
+        if not cart:
+            return jsonify("Cart does not exist"), 404
+
+        return jsonify("Cart exists")
+    except Exception as ex:
+        return jsonify(error=str(ex))
