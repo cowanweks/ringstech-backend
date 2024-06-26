@@ -30,4 +30,4 @@ def generate_tracking_number():
 
     # Combine them to form the tracking number
     tracking_number = date_str + random_str
-    return tracking_number
+    return tracking_number.capitalize()

@@ -9,11 +9,11 @@ def at_least_one_filled(form, field):
         raise ValidationError("Either phone number or email address must be provided.")
 
 
-def validate_mpesa_phone(phone: str):
+def validate_mpesa_phone(form, field ):
 
     try:
         # Remove any non-digit characters
-        cleaned_phone_number = re.sub(r'\D', '', phone)
+        cleaned_phone_number = re.sub(r'\D', '', field.data)
 
         # Define the regex pattern for Kenyan phone numbers
         pattern = r'^(254)([71][0-9]{8})$'
@@ -21,7 +21,7 @@ def validate_mpesa_phone(phone: str):
 
         # Check if the cleaned phone number matches the pattern
         if not regex.match(cleaned_phone_number):
-            raise ValidationError('Invalid Kenyan phone number format')
+            raise ValidationError('Invalid Mpesa phone number format')
 
     except Exception as ex:
         print(ex)

@@ -107,43 +107,6 @@ def simulate_route():
     return response.json()
 
 
-@payment_route.route("/checkstatus/<checkout_request_id>")
-def check_payment_status(checkout_request_id):
-    # Endpoint for querying transaction status
-    endpoint = f'{BASE_URL}/mpesa/stkpushquery/v1/query'
-    access_token = get_mpesa_access_token()
-
-    # Prepare headers
-    headers = {
-        'Authorization': f'Bearer {access_token}',
-        'Content-Type': 'application/json'
-    }
-
-    # Prepare request payload
-    payload = {
-        'BusinessShortCode': 'your_business_shortcode',
-        'Password': 'your_password',
-        'Timestamp': 'yyyymmddhhmmss',
-        'CheckoutRequestID': checkout_request_id
-    }
-
-    try:
-        response = requests.post(endpoint, json=payload, headers=headers)
-        response_data = response.json()
-        print(response_data)
-
-        # Check if payment is successful
-        if response_data['ResultCode'] == '0' and response_data[
-            'ResultDesc'] == 'The service request is processed successfully.':
-            return True
-        else:
-            return False
-
-    except requests.exceptions.RequestException as e:
-        print(f"Error querying transaction status: {e}")
-        return False
-
-
 @payment_route.route("/pay")
 def pay_route():
     phone_number = request.args.get("phone_number")
@@ -189,6 +152,47 @@ def pay_route():
     except requests.exceptions.RequestException as ex:
         logging.error(f"Error occurred: {ex}")
         return jsonify(error=str(ex)), 500
+
+
+@payment_route.route("/check_status/<checkout_request_id>")
+def check_payment_status(checkout_request_id):
+    # Endpoint for querying transaction status
+    endpoint = 'https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query'
+    access_token = get_mpesa_access_token()
+
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    password = "174379" + "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919" + timestamp
+    data_pass = base64.b64encode(password.encode('utf-8')).decode('utf-8')
+
+    # Prepare headers
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+
+    # Prepare request payload
+    payload = {
+        'BusinessShortCode': '174379',
+        'Password': data_pass,
+        'Timestamp': timestamp,
+        'CheckoutRequestID': checkout_request_id
+    }
+
+    try:
+        response = requests.post(endpoint, json=payload, headers=headers)
+        response_data = response.json()
+
+        # Check if payment is successful
+        if response_data['ResponseCode'] == '0' and response_data[
+            'ResultDesc'] == 'The service request is processed successfully.':
+            return jsonify(msg="Transaction Complete", status=1), response.status_code
+
+        else:
+            return jsonify(msg="Transaction Failed!", status=0), response.status_code
+
+    except requests.exceptions.RequestException as ex:
+        print(f"Error querying transaction status: {ex}")
+        return jsonify(f"Error querying transaction status: {str(ex)}"), 500
 
 
 @payment_route.route('/success', methods=['POST'])

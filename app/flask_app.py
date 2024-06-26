@@ -1,6 +1,7 @@
 import os
 import secrets
 from flask import Flask
+from app.config import ProductionConfig, DevelopmentConfig, TestingConfig
 from .extensions import cors, db, sess, folder_setup
 from app.routes import (
     index_route,
@@ -8,10 +9,10 @@ from app.routes import (
     user_route,
     role_route,
     product_route,
-    payment_route
+    payment_route,
+    order_route
 )  # Routes
 from app.errors.error_handlers import not_found  # Error Handlers
-from app.config import ProductionConfig, DevelopmentConfig, TestingConfig
 from app.utils.app_utils import app_setup
 from app.utils import bcolors
 from cachelib.file import FileSystemCache
@@ -51,6 +52,7 @@ def create_app() -> Flask:
     app.register_blueprint(role_route)
     app.register_blueprint(product_route)
     app.register_blueprint(payment_route)
+    app.register_blueprint(order_route)
 
     # Register error handlers
     app.register_error_handler(404, not_found)

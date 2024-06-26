@@ -162,7 +162,7 @@ class Product(db.Model):
         return {
             "product_id": self.product_id,
             "product_name": self.product_name,
-            "product_unit_price": self.product_unit_price,
+            "product_unit_price": float(self.product_unit_price),
             "description": self.description,
             "product_category": self.product_category,
             "available_colors": self.available_colors_list,

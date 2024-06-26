@@ -2,10 +2,16 @@ import os
 from smtplib import SMTP, SMTPException
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from dotenv import load_dotenv, find_dotenv
 
+load_dotenv(find_dotenv())
 
 SMTP_USER = os.getenv("SMTP_USER")
-SMTP_PASSWD = os.getenv("SMTP_PASSWORD")
+SMTP_PASSWD = os.getenv("SMTP_PASSWD")
+
+
+if not SMTP_USER or not SMTP_PASSWD:
+    raise ValueError("SMTP_USER and SMTP_PASSWD environment variables must be set")
 
 
 def send_email(
