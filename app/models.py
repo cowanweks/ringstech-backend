@@ -1,14 +1,9 @@
-import base64
 import json
 import datetime
-from dataclasses import dataclass
-
-from flask import jsonify
-from sqlalchemy.types import DateTime
+from sqlalchemy.types import DateTime, JSON
 from sqlalchemy.orm import Mapped, mapped_column
 from .extensions import db
 from sqlalchemy import LargeBinary
-import io
 
 
 class Users(db.Model):
@@ -137,7 +132,7 @@ class Product(db.Model):
     description = db.Column(db.String, nullable=False)
     product_category = db.Column(db.String, nullable=False)
     available_colors = db.Column(db.String, nullable=False)
-    is_available = db.Column(db.Boolean,nullable=False)
+    is_available = db.Column(db.Boolean, nullable=False)
     in_stock = db.Column(db.Integer, nullable=False)
     product_image = db.Column(db.String, nullable=False)
     model = db.Column(db.String, nullable=True)
@@ -152,6 +147,7 @@ class Product(db.Model):
     def available_colors_list(self):
         if self.available_colors:
             return json.loads(self.available_colors)
+
         return []
 
     @available_colors_list.setter
@@ -165,7 +161,7 @@ class Product(db.Model):
             "product_unit_price": float(self.product_unit_price),
             "description": self.description,
             "product_category": self.product_category,
-            "available_colors": [],
+            "available_colors": self.available_colors_list,
             "is_available": self.is_available,
             "in_stock": self.in_stock,
             "product_image": self.product_image,

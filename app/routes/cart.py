@@ -2,7 +2,7 @@ import os
 from flask import (
     Blueprint,
     request,
-    jsonify,
+    jsonify, Response,
 )
 import requests
 from uuid import uuid4
@@ -88,15 +88,9 @@ def view_cart_route():
     cart_id = request.args.get("cart_id")
 
     if not cart_id:
-        return jsonify(error="Please provide Cart ID")
-
-    # query = db.select(CartItem).order_by(CartItem.item_id)
-    # query = query.where(CartItem.cart_id == cart_id)
-    #
-    # cart = db.session.execute(query).scalars().all()
+        return jsonify(error="Please provide Cart ID"), 400
 
     cart = db.session.query(Cart).filter_by(cart_id=cart_id, checked_out=False).scalar()
-    print(cart)
 
     if not cart:
         return jsonify(f"Cart {cart_id} does not exist!"), 404
@@ -107,7 +101,10 @@ def view_cart_route():
         return jsonify([]), 200
 
     serialized_cart_items = [item.serialize() for item in cart_items]
-    return jsonify(serialized_cart_items)
+    # return jsonify(serialized_cart_items)
+    return Response(headers={"Access-Control-Allow-Origin": "*"},
+                    response=serialized_cart_items,
+                    )
 
 
 @cart_route.route("/checkout", methods=["POST"])

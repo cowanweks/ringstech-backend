@@ -8,4 +8,4 @@ from flask_wtf.csrf import CSRFProtect
 sess = Session()
 db = SQLAlchemy(model_class=Base)
 folder_setup = FolderSetup()
-cors = CORS()
+cors = CORS(origins=['*'])

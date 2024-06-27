@@ -14,8 +14,9 @@ product_route = Blueprint(
 
 @product_route.route("/", methods=["POST"])
 def new_product_route():
-    """New Unit"""
+    """New Product"""
 
+    print(request.form)
     valid, msg = new_product(request)
 
     if valid:
@@ -41,7 +42,8 @@ def get_products_route():
 
         products = db.session.execute(query).scalars().all()
         serialized_products = [product.serialize() for product in products]
-        return jsonify(serialized_products), 200
+
+        return serialized_products, 200
 
     except Exception as ex:
         print(ex)

@@ -121,11 +121,13 @@ def check_cart_exists():
         return jsonify("Cart ID is required"), 400
 
     try:
+
         cart = db.session.query(Cart).filter_by(cart_id=cart_id).scalar()
 
         if not cart:
             return jsonify("Cart does not exist"), 404
 
-        return jsonify("Cart exists")
+        return jsonify("Cart exists"), 200
+
     except Exception as ex:
         return jsonify(error=str(ex))
