@@ -22,19 +22,17 @@ BASE_URL = os.getenv("BASE_URL")
 if BASE_URL is None:
     raise Exception("BASE_URL not provided!")
 
-cart_route = Blueprint("cart_route", __name__, url_prefix="/ringstech/api/v1/cart")
+cart_route = Blueprint("cart_route", __name__, url_prefix="/api/cart")
 
 
-@cart_route.route("/", methods=["POST"])
-def add_item_to_cart_route():
+@cart_route.post("/<cart_id>")
+def add_item_to_cart_route(cart_id: str):
     """Route to add new item to cart"""
-    cart_id = request.args.get("cart_id")
-    product_id = request.args.get("product_id")
-    quantity = request.args.get("quantity")
-    color = request.args.get("color")
+    product_id = request.form.get("product_id")
+    quantity = request.form.get("quantity")
+    color = request.form.get("color")
 
-    if not cart_id:
-        return jsonify(error="Cart Id not provided")
+    print(request.form)
 
     if not product_id:
         return jsonify(error="Product Id not provided")
@@ -82,39 +80,40 @@ def add_item_to_cart_route():
         return jsonify(error=str(ex))
 
 
-@cart_route.route("/", methods=["GET"])
-def view_cart_route():
+@cart_route.get("/get_quantity/<item_id>")
+def view_cart_item_route(item_id: str):
     """Route to View Cart"""
-    cart_id = request.args.get("cart_id")
 
-    if not cart_id:
-        return jsonify(error="Please provide Cart ID"), 400
+    try:
+        quantity = db.session.query(CartItem.quantity).filter_by(item_id=item_id).scalar()
+        return jsonify(quantity), 200
+
+    except Exception as ex:
+        print(ex)
+        return jsonify(f"{str(ex)}"), 500
+
+
+@cart_route.get("/<cart_id>")
+def view_cart_route(cart_id: str):
+    """Route to View Cart"""
 
     cart = db.session.query(Cart).filter_by(cart_id=cart_id, checked_out=False).scalar()
 
     if not cart:
         return jsonify(f"Cart {cart_id} does not exist!"), 404
 
-    cart_items = db.session.query(CartItem).filter_by(cart_id=cart.cart_id)
+    cart_items = db.session.query(CartItem).filter_by(cart_id=cart.cart_id).all()
 
     if not cart_items:
         return jsonify([]), 200
 
     serialized_cart_items = [item.serialize() for item in cart_items]
-    # return jsonify(serialized_cart_items)
-    return Response(headers={"Access-Control-Allow-Origin": "*"},
-                    response=serialized_cart_items,
-                    )
+    return jsonify(serialized_cart_items)
 
 
-@cart_route.route("/checkout", methods=["POST"])
-def checkout_cart():
+@cart_route.post("/checkout/<cart_id>")
+def checkout_cart(cart_id: str):
     """New Order"""
-
-    cart_id = request.args.get("cart_id")
-
-    if not cart_id:
-        return jsonify(error="Cart ID Required")
 
     cart = db.session.query(Cart).filter_by(cart_id=cart_id).scalar()
 
@@ -172,8 +171,9 @@ def checkout_cart():
         return jsonify(error="Order already exists!"), 500
 
 
-@cart_route.route("/clear", methods=["GET"])
+@cart_route.get("/clear")
 def clear_cart():
+
     cart_id = request.args.get("cart_id")
 
     try:
@@ -184,6 +184,25 @@ def clear_cart():
         db.session.commit()
 
         return jsonify("Successfully Cleared Cart"), 200
+
+    except Exception as ex:
+        print(ex)
+        return jsonify("Could not clear cart!"), 500
+
+
+@cart_route.put("/update_quantity")
+def update_cart():
+
+    cart_id = request.form.get("cart_id")
+    item_id = request.form.get("item_id")
+    quantity = request.form.get("quantity")
+
+    try:
+        (db.session.query(CartItem).filter_by(cart_id=cart_id, item_id=item_id)
+         .update({'quantity': quantity}))
+        db.session.commit()
+
+        return jsonify(f"Successfully Update quantity to {quantity}"), 200
 
     except Exception as ex:
         print(ex)

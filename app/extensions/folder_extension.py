@@ -13,8 +13,8 @@ class FolderSetup:
         if app is not None:
             FolderSetup.root_path = os.path.dirname(app.instance_path)
 
-        app.static_folder = os.path.join(FolderSetup.root_path, "static")
-        app.template_folder = os.path.join(FolderSetup.root_path, "templates")
+        # app.static_folder = os.path.join(FolderSetup.root_path, "static")
+        # app.template_folder = os.path.join(FolderSetup.root_path, "templates")
 
         # Create uploads directory if it does not exist
         try:

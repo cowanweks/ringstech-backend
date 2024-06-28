@@ -10,7 +10,7 @@ from flask import Blueprint, request, jsonify, current_app
 from uuid import uuid4
 
 # Payment blueprint
-payment_route = Blueprint("payment_route", __name__, url_prefix="/ringstech/api/v1/payment")
+payment_route = Blueprint("payment_route", __name__, url_prefix="/api/payment")
 
 BASE_URL = os.getenv("BASE_URL")
 
@@ -38,13 +38,13 @@ def get_mpesa_access_token():
         return None
 
 
-@payment_route.route("/access_token")
+@payment_route.get("/access_token")
 def get_access_token_route():
     token = get_mpesa_access_token()
     return token
 
 
-@payment_route.route("/register_urls")
+@payment_route.get("/register_urls")
 def register_urls_route():
     mpesa_endpoint_url = "https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl"
     access_token = get_mpesa_access_token()
@@ -60,7 +60,7 @@ def register_urls_route():
     return response_data.json()
 
 
-@payment_route.route("/confirm")
+@payment_route.get("/confirm")
 def confirm_payment_route():
     data = request.json()
 
@@ -76,7 +76,7 @@ def confirm_payment_route():
     }
 
 
-@payment_route.route("/validate")
+@payment_route.get("/validate")
 def validate_payment_route():
     data = request.json()
 
@@ -90,7 +90,7 @@ def validate_payment_route():
     }
 
 
-@payment_route.route("/simulate")
+@payment_route.get("/simulate")
 def simulate_route():
     mpesa_endpoint_url = "https://sandbox.safaricom.co.ke/mpesa/c2b/v1/simulate"
     access_token = get_mpesa_access_token()
@@ -107,7 +107,7 @@ def simulate_route():
     return response.json()
 
 
-@payment_route.route("/pay")
+@payment_route.get("/pay")
 def pay_route():
     phone_number = request.args.get("phone_number")
     total_amount = request.args.get("total_amount")
@@ -119,7 +119,7 @@ def pay_route():
     if not phone_number:
         return jsonify("Phone number not provided"), 400
 
-    my_endpoint = BASE_URL + "/ringstech/api/v1/payment/success"
+    my_endpoint = BASE_URL + "/api/v1/payment/success"
     mpesa_endpoint_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
     access_token = get_mpesa_access_token()
     req_headers = {
@@ -154,9 +154,10 @@ def pay_route():
         return jsonify(error=str(ex)), 500
 
 
-@payment_route.route("/check_status/<checkout_request_id>")
+@payment_route.get("/check_status/<checkout_request_id>")
 def check_payment_status(checkout_request_id):
-    # Endpoint for querying transaction status
+    """Endpoint for querying transaction status"""
+
     endpoint = 'https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query'
     access_token = get_mpesa_access_token()
 
@@ -195,7 +196,7 @@ def check_payment_status(checkout_request_id):
         return jsonify(f"Error querying transaction status: {str(ex)}"), 500
 
 
-@payment_route.route('/success', methods=['POST'])
+@payment_route.get('/success')
 def lnmo_result():
     data = request.get_data()
 

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/ringstech-backend.iml" filepath="$PROJECT_DIR$/.idea/ringstech-backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/samsungstore.iml" filepath="$PROJECT_DIR$/.idea/samsungstore.iml" />
     </modules>
   </component>
 </project>

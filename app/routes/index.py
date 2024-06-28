@@ -4,7 +4,7 @@ from flask import (
     jsonify,
     session,
     render_template,
-    Response,
+    Response, send_from_directory,
 )
 from app.models import Image, db
 from uuid import uuid4
@@ -12,39 +12,10 @@ from app.models import Cart
 from app.controllers.login import login, logout
 
 
-index_route = Blueprint("index_route", __name__, url_prefix="/ringstech/api/v1")
+index_route = Blueprint("index_route", __name__, url_prefix="/api")
 
 
-@index_route.route("/", methods=["GET"])
-def index():
-    return render_template("index.html")
-
-
-@index_route.route("/signin", methods=["POST", "GET"])
-def signin_user():
-    """The route that handles user signin"""
-
-    valid, response = login(request.form)
-
-    if valid:
-        return jsonify(msg=response), 200
-
-    return jsonify(msg=response), 401
-
-
-@index_route.route("/signout", methods=["GET"])
-def signout_user():
-    """The route that handles user signout"""
-
-    valid, response = logout(request.args.get("user_id"))
-
-    if valid:
-        return jsonify(msg=response), 200
-
-    return jsonify(msg=response), 500
-
-
-@index_route.route("/images", methods=["GET"])
+@index_route.get("/images")
 def get_image():
     image_id = request.args.get("id")
 
@@ -61,9 +32,9 @@ def get_image():
         return jsonify(image)
 
 
-@index_route.route("/images/<id>", methods=["DELETE"])
-def delete_image(id):
-    image = Image.query.get(id)
+@index_route.delete("/images/<image_id>")
+def delete_image(image_id: str):
+    image = Image.query.get(image_id)
 
     if not image:
         return jsonify({"error": "Image not found"}), 404
@@ -78,7 +49,7 @@ def delete_image(id):
         return jsonify({"error": str(e)}), 500
 
 
-@index_route.route("/images/delete", methods=["DELETE"])
+@index_route.delete("/images/delete")
 def delete_all_images():
     try:
         # Delete all records in the Image table
@@ -96,7 +67,7 @@ def delete_all_images():
         return jsonify({"error": str(e)}), 500
 
 
-@index_route.route("/create_cart")
+@index_route.get("/create_cart")
 def create_cart():
     """Route to create route"""
 
@@ -111,23 +82,18 @@ def create_cart():
         return jsonify(error=str(ex))
 
 
-@index_route.route("/check_cart")
-def check_cart_exists():
+@index_route.get("/check_cart/<cart_id>")
+def check_cart_exists(cart_id: str):
     """Route to create route"""
-
-    cart_id = request.args.get("cart_id")
-
-    if not cart_id:
-        return jsonify("Cart ID is required"), 400
 
     try:
 
         cart = db.session.query(Cart).filter_by(cart_id=cart_id).scalar()
 
         if not cart:
-            return jsonify("Cart does not exist"), 404
+            return jsonify(exists=False), 404
 
-        return jsonify("Cart exists"), 200
+        return jsonify(exists=True), 200
 
     except Exception as ex:
         return jsonify(error=str(ex))

@@ -5,12 +5,12 @@ from flask import request, jsonify, Blueprint
 from app.controllers.mailing import send_email
 from app.models import db, Order, Product, CartItem
 
-order_route = Blueprint("order_route", __name__, url_prefix="/ringstech/api/v1/orders")
+order_route = Blueprint("order_route", __name__, url_prefix="/api/orders")
 
 BASE_URL = os.getenv("BASE_URL")
 
 
-@order_route.route("/", methods=["GET"])
+@order_route.get("/")
 def get_orders_route():
     """Get Orders"""
 
@@ -33,7 +33,7 @@ def get_orders_route():
         return jsonify(str(ex)), 500
 
 
-@order_route.route("/", methods=["DELETE"])
+@order_route.delete("/")
 def delete_order_route():
     """Delete Order"""
 
@@ -52,7 +52,7 @@ def delete_order_route():
         return jsonify(str(ex)), 500
 
 
-@order_route.route("/update_payment_status", methods=["GET"])
+@order_route.get("/update_payment_status")
 def update_payment_status():
     order_id = request.args.get("order_id")
 
@@ -70,7 +70,8 @@ def update_payment_status():
         return jsonify(str(ex)), 500
 
 
-@order_route.route("/update_stock")
+@order_route.put("/update_stock")
+@order_route.patch("/update_stock")
 def update_product_stock():
     cart_id = request.args.get("cart_id")
 
@@ -93,7 +94,7 @@ def update_product_stock():
         return jsonify(str(ex)), 500
 
 
-@order_route.route("/email_customer", methods=["POST"])
+@order_route.get("/email_customer")
 def email_customer():
     order_id = request.args.get("order_id")
     first_name = request.args.get("first_name")
@@ -144,7 +145,7 @@ samsungphonesandspairecentre@gmail.com
     return jsonify("Could not send Email!"), 500
 
 
-@order_route.route("/email_store")
+@order_route.get("/email_store")
 def email_store():
 
     order_id = request.args.get("order_id")
@@ -178,7 +179,7 @@ def email_store():
         return jsonify("Could not send Email!"), 500
 
 
-@order_route.route("/complete_order", methods=["GET"])
+@order_route.get("/complete_order")
 def complete_order_after_payment():
 
     payment_request_id = request.args.get("payment_request_id")

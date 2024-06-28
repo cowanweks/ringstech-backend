@@ -1,8 +1,7 @@
 import os
-import secrets
-from flask import Flask
+from flask import Flask, send_from_directory, current_app
 from app.config import ProductionConfig, DevelopmentConfig, TestingConfig
-from .extensions import cors, db, sess, folder_setup
+from .extensions import cors, db, sess, vite, folder_setup
 from app.routes import (
     index_route,
     cart_route,
@@ -12,28 +11,18 @@ from app.routes import (
     payment_route,
     order_route
 )  # Routes
-from app.errors.error_handlers import not_found  # Error Handlers
 from app.utils.app_utils import app_setup
 from app.utils import bcolors
-from cachelib.file import FileSystemCache
 
 
-# Create application and return it.
 @app_setup
 def create_app() -> Flask:
+    """Create flask app"""
+
     app = Flask(__name__)
 
-    app.config["SECRET_KEY"] = secrets.token_hex(16)
-    app.config["SESSION_TYPE"] = "cachelib"
-    app.config["SESSION_USE_SIGNER"] = True
-    app.config["SESSION_SERIALIZATION_FORMAT"] = "json"
-    app.config["SESSION_CACHELIB"] = FileSystemCache(threshold=500, cache_dir="sessions")
-
-    # Prevent redirects in blueprints
+    # # Prevent redirects in blueprints
     app.url_map.strict_slashes = False
-    app.add_url_rule(
-        "/ringstech/api/v1", endpoint="api_index", view_func=lambda: "API Home Page"
-    )
 
     # Set the application configuration
     if os.getenv("ENV") == "production":
@@ -54,12 +43,10 @@ def create_app() -> Flask:
     app.register_blueprint(payment_route)
     app.register_blueprint(order_route)
 
-    # Register error handlers
-    app.register_error_handler(404, not_found)
-
     db.init_app(app)
     cors.init_app(app)
     sess.init_app(app)
+    vite.init_app(app)
     folder_setup.init_app(app)  # Set the templates and static directories
 
     with app.app_context():
@@ -67,12 +54,8 @@ def create_app() -> Flask:
 
     print(
         bcolors.OKGREEN
-        + f"""[*] - You are running {app.config.get('APP_NAME')} in {app.config.get('ENV')} on HOST {app.config.get("HOST")} on PORT {app.config.get("PORT")} !"""
+        + f"""[*] - You are running {app.config.get('APP_NAME')} in {app.config.get(
+            'ENV')} on HOST {app.config.get("HOST")} on PORT {app.config.get("PORT")} !"""
     )
-
-    @app.after_request
-    def after_request(response):
-
-        return response
 
     return app

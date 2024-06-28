@@ -6,13 +6,13 @@ from app.controllers.product import (
 )
 from app.models import db, Product
 
-# Units blueprint
+# Products blueprint
 product_route = Blueprint(
-    "product_route", __name__, url_prefix="/ringstech/api/v1/products"
+    "product_route", __name__, url_prefix="/api/products"
 )
 
 
-@product_route.route("/", methods=["POST"])
+@product_route.post("/")
 def new_product_route():
     """New Product"""
 
@@ -25,9 +25,9 @@ def new_product_route():
     return jsonify(msg), 500
 
 
-@product_route.route("/", methods=["GET"])
+@product_route.get("/")
 def get_products_route():
-    """Get Units"""
+    """Get Products"""
 
     product_id = request.args.get("product_id")
     product_category = request.args.get("category")
@@ -36,13 +36,25 @@ def get_products_route():
         query = db.select(Product).order_by(Product.product_id)
 
         if product_id:
-            query = query.where(Product.product_id == product_id)
+
+            product = db.session.query(Product).filter_by(product_id=product_id).scalar()
+            if not product:
+                return jsonify(f"Product of id {product_id} can not be found!"), 404
+
+            return jsonify(product.serialize()), 200
+
         if product_category:
-            query = query.where(Product.product_category == product_category)
 
-        products = db.session.execute(query).scalars().all()
+            products = db.session.query(Product).filter_by(product_category=product_category).all()
+
+            if not products:
+                return jsonify("Products of category {} can not be found!"),
+
+            serialized_products = [product.serialize() for product in products]
+            return serialized_products, 200
+
+        products = db.session.query(Product).all()
         serialized_products = [product.serialize() for product in products]
-
         return serialized_products, 200
 
     except Exception as ex:
@@ -50,11 +62,17 @@ def get_products_route():
         return jsonify(str(ex)), 500
 
 
-@product_route.route("/", methods=["PUT", "PATCH"])
+@product_route.put("/")
+@product_route.patch("/")
 def update_product_route():
-    """Update Unit"""
+    """Update Product"""
 
-    valid, response = update_product(request.args.get("product_id"), request.form)
+    product_id = request.args.get("product_id")
+
+    if not product_id:
+        return jsonify("Product ID not provided"), 400
+
+    valid, response = update_product(product_id, request.form)
 
     if valid:
         return jsonify(msg=response), 201
@@ -63,11 +81,16 @@ def update_product_route():
         return jsonify(msg=response), 500
 
 
-@product_route.route("/", methods=["DELETE"])
+@product_route.delete("/")
 def delete_product_route():
-    """Delete Unit"""
+    """Delete Product"""
 
-    valid, response = delete_product(request.args.get("product_id"))
+    product_id = request.args.get("product_id")
+
+    if not product_id:
+        return jsonify("Product ID not provided"), 400
+
+    valid, response = delete_product(product_id)
 
     if valid:
         return jsonify(msg=response), 200
@@ -76,7 +99,7 @@ def delete_product_route():
         return jsonify(msg=response), 500
 
 
-@product_route.route("/delete", methods=["DELETE"])
+@product_route.delete("/delete_all")
 def delete_all_products():
     try:
         # Delete all records in the Image table

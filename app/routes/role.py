@@ -8,7 +8,7 @@ from app.models import db, Roles
 
 
 # Role blueprint
-role_route = Blueprint("role_route", __name__, url_prefix="/ringstech/api/v1/roles")
+role_route = Blueprint("role_route", __name__, url_prefix="/api/roles")
 
 
 # The route that handles role registration

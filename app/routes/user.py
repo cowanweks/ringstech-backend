@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
+
+from app.controllers.login import login, logout
 from app.controllers.user import new_user, get_users, delete_user, update_user
 
 
 # User blueprint
-user_route = Blueprint("user_route", __name__, url_prefix="/ringstech/api/v1/users")
+user_route = Blueprint("user_route", __name__, url_prefix="/api/users")
 
 
 @user_route.route("/", methods=["POST"])
@@ -56,10 +58,26 @@ def delete_user_route():
         return jsonify(msg="Database error occurred!"), 500
 
 
-def signin_user_route():
-    """"""
-    pass
+@user_route.post("/signin")
+def signin_user():
+    """The route that handles user signin"""
+
+    valid, response = login(request.form)
+
+    if valid:
+        return jsonify(msg=response), 200
+
+    return jsonify(msg=response), 401
 
 
-def signout_user_route():
-    pass
+@user_route.get("/signout")
+def signout_user():
+    """The route that handles user signout"""
+
+    valid, response = logout(request.args.get("user_id"))
+
+    if valid:
+        return jsonify(msg=response), 200
+
+    return jsonify(msg=response), 500
+
