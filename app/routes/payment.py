@@ -7,13 +7,11 @@ from datetime import datetime
 import requests
 from requests.auth import HTTPBasicAuth
 from flask import Blueprint, request, jsonify, current_app
-from uuid import uuid4
 
 # Payment blueprint
 payment_route = Blueprint("payment_route", __name__, url_prefix="/api/payment")
 
 BASE_URL = os.getenv("BASE_URL")
-
 
 def get_mpesa_access_token():
     mpesa_auth_url = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
@@ -119,7 +117,7 @@ def pay_route():
     if not phone_number:
         return jsonify("Phone number not provided"), 400
 
-    my_endpoint = BASE_URL + "/api/v1/payment/success"
+    my_endpoint = BASE_URL + "/api/payment/success"
     mpesa_endpoint_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
     access_token = get_mpesa_access_token()
     req_headers = {
@@ -198,8 +196,11 @@ def check_payment_status(checkout_request_id):
 
 @payment_route.get('/success')
 def lnmo_result():
+
     data = request.get_data()
 
-    with open('lnmo.json', 'a') as fd:
-        fd.write(json.dumps(data))
+    with open('success.json', 'ab') as fd:
+        fd.write(data)
         fd.close()
+
+    return jsonify("Success"), 200

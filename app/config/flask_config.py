@@ -18,7 +18,7 @@ class DBConfig(object):
 class Config(DBConfig):
     """Base Application Config"""
 
-    PORT = 3000
+    PORT = 3001
     DEBUG = True
     TESTING = False
     HOST = "0.0.0.0"
@@ -52,7 +52,6 @@ class TestingConfig(Config):
 class ProductionConfig(Config):
     """Config for Production"""
 
-    PORT = 3001
     ENV = "production"
     DEBUG = False
     TESTING = True

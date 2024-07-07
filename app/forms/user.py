@@ -36,5 +36,5 @@ class UserUpdatePasswordForm(Form):
 class UserLoginForm(Form):
     """A form representing User login"""
 
-    email: str = StringField('email', [validators.DataRequired("Email is required!")])
+    username: str = StringField('username', [validators.DataRequired("UserName is required!")])
     password: str = PasswordField('password', [validators.DataRequired("Password is required!")])

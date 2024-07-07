@@ -55,7 +55,7 @@ def create_app() -> Flask:
     print(
         bcolors.OKGREEN
         + f"""[*] - You are running {app.config.get('APP_NAME')} in {app.config.get(
-            'ENV')} on HOST {app.config.get("HOST")} on PORT {app.config.get("PORT")} !"""
+            'ENV')} on HOST {app.config.get("HOST")} on PORT {app.config.get("PORT")} with {app.config.get("SQLALCHEMY_DATABASE_URI")} as database URI !"""
     )
 
     return app

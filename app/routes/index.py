@@ -2,14 +2,16 @@ from flask import (
     Blueprint,
     request,
     jsonify,
-    session,
-    render_template,
-    Response, send_from_directory,
+    Response,
+    session
 )
-from app.models import Image, db
+from app.models import Image
 from uuid import uuid4
 from app.models import Cart
-from app.controllers.login import login, logout
+from app.models import db, Users
+from app.forms.user import UserLoginForm
+from app.utils.login_utils import verify_password
+from sqlalchemy.exc import SQLAlchemyError
 
 
 index_route = Blueprint("index_route", __name__, url_prefix="/api")
@@ -97,3 +99,36 @@ def check_cart_exists(cart_id: str):
 
     except Exception as ex:
         return jsonify(error=str(ex))
+
+
+@index_route.post("/signin")
+def signin_user():
+    """The route that handles user signin"""
+
+    try:
+
+        user_form = UserLoginForm(request.form)
+
+        print(user_form.data)
+
+        if user_form.validate():
+
+            user = db.session.query(Users).filter_by(username=user_form.username.data).scalar()
+
+            if not user or not verify_password(user_form.password.data, user.password):
+                return jsonify("Incorrect username or password!"), 401
+
+            session["username"] = user_form.username.data
+            return jsonify(f"Successfully SignedIn as {user_form.username.data}!"), 200
+
+        return jsonify(user_form.errors), 400
+
+    except SQLAlchemyError as ex:
+        print(ex)
+        return jsonify("Database error occurred!"), 500
+
+
+@index_route.get("/signout")
+def signout_user():
+    """Logout user"""
+    return jsonify("Successfully SignedOut!"), 200

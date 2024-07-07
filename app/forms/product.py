@@ -1,7 +1,24 @@
+import json
 from wtforms import StringField, validators, BooleanField, IntegerField, FileField, FloatField
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
+from wtforms.validators import ValidationError
 
+
+def validate_colors(form, field ):
+    """"""
+    available_colors = form.available_colors.data
+
+    try:
+
+        available_colors = json.loads(available_colors)
+
+        if not isinstance(available_colors, list):
+            raise ValidationError("Available colors should be a an array of colors.")
+
+    except Exception as ex:
+        print(ex)
+        raise ValidationError("Available colors should be a an array of colors.")
 
 class ProductForm(FlaskForm):
     """A form representing Product registration"""
@@ -17,9 +34,8 @@ class ProductForm(FlaskForm):
     cameras = StringField("Product Cameras", [])
     product_image = (
         FileField("Product Image", [FileRequired("Product Image is required"), FileAllowed(
-            {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'webp',
-             'avif', 'bmp', 'tiff', 'ico', 'svg', 'psd', 'eps',
-             'ai', 'raw', 'heic', 'heif'
+            {'png', 'jpg', 'jpeg', 'webp',
+             'avif', 'bmp'
              })]
             ))
     processor = StringField("Product Processor", [])
@@ -48,7 +64,7 @@ class ProductForm(FlaskForm):
 
     available_colors = StringField(
         "Available Color",
-        [validators.DataRequired("Product Available Colors is required!")],
+        [validators.DataRequired("Product Available Colors is required!"), validate_colors],
     )
 
     is_available = BooleanField(

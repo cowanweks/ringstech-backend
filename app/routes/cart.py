@@ -10,7 +10,6 @@ from app.models import Order
 from app.forms.order import OrderForm
 from sqlalchemy.exc import SQLAlchemyError
 from app.models import db, Cart, CartItem, Product
-from app.controllers.mailing import send_email
 from dotenv import load_dotenv, find_dotenv
 
 from app.utils import generate_tracking_number
@@ -152,6 +151,7 @@ def checkout_cart(cart_id: str):
 
             # Make Payment
             response = requests.get(payment_url)
+
             response_data = response.json()
 
             if response.status_code == 200:
